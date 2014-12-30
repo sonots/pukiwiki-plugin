@@ -1,0 +1,158 @@
+Common subdirectories: plus.orig/lib/.svn and plus.E_ALL.dev/lib/.svn
+diff -u plus.orig/lib/auth.cls.php plus.E_ALL.dev/lib/auth.cls.php
+--- plus.orig/lib/auth.cls.php	2007-06-04 05:25:13.750000000 -0400
++++ plus.E_ALL.dev/lib/auth.cls.php	2007-06-15 15:04:45.453125000 -0400
+@@ -58,7 +58,7 @@
+ 		}
+ 
+ 		// PHP Digest認証対応
+-		if (($data = auth::http_digest_parse($_SERVER['PHP_AUTH_DIGEST']))) {
++		if (isset($_SERVER['PHP_AUTH_DIGEST']) && ($data = auth::http_digest_parse($_SERVER['PHP_AUTH_DIGEST']))) {
+ 			if (! empty($data['username'])) return $data['username'];
+ 		}
+ 
+@@ -399,7 +399,7 @@
+ 	{
+ 		// FIXME: なんかかっこ悪いロジックだぁ
+ 
+-		if (empty($_SERVER['PHP_AUTH_DIGEST'])) {
++		if (! isset($_SERVER['PHP_AUTH_DIGEST']) || empty($_SERVER['PHP_AUTH_DIGEST'])) {
+ 			header('HTTP/1.1 401 Unauthorized');
+ 			header('WWW-Authenticate: Digest realm="'.$realm.
+ 				'", qop="auth", nonce="'.uniqid().'", opaque="'.md5($realm).'"');
+@@ -408,7 +408,7 @@
+ 			return FALSE;
+ 		}
+ 
+-		if (!($data = auth::http_digest_parse($_SERVER['PHP_AUTH_DIGEST']))) {
++		if (isset($_SERVER['PHP_AUTH_DIGEST']) && !($data = auth::http_digest_parse($_SERVER['PHP_AUTH_DIGEST']))) {
+ 			header('HTTP/1.1 401 Unauthorized');
+ 			header('WWW-Authenticate: Digest realm="'.$realm.
+ 				'", qop="auth", nonce="'.uniqid().'", opaque="'.md5($realm).'"');
+diff -u plus.orig/lib/convert_html.php plus.E_ALL.dev/lib/convert_html.php
+--- plus.orig/lib/convert_html.php	2007-06-04 05:25:13.593750000 -0400
++++ plus.E_ALL.dev/lib/convert_html.php	2007-06-15 14:17:24.421875000 -0400
+@@ -98,40 +98,44 @@
+ {
+ 	// Check the first letter of the line
+ 	if (substr($text, 0, 1) == '~') {
+-		return new Paragraph(' ' . substr($text, 1));
++		$obj = new Paragraph(' ' . substr($text, 1));
+ 	} else {
+-		return new Inline($text);
++		$obj = new Inline($text);
+ 	}
++	return $obj;
+ }
+ 
+ function & Factory_DList(& $root, $text)
+ {
+ 	$out = explode('|', ltrim($text), 2);
+ 	if (count($out) < 2) {
+-		return Factory_Inline($text);
++		$obj = Factory_Inline($text);
+ 	} else {
+-		return new DList($out);
++		$obj = new DList($out);
+ 	}
++	return $obj;
+ }
+ 
+ // '|'-separated table
+ function & Factory_Table(& $root, $text)
+ {
+ 	if (! preg_match('/^\|(.+)\|([hHfFcC]?)$/', $text, $out)) {
+-		return Factory_Inline($text);
++		$obj = Factory_Inline($text);
+ 	} else {
+-		return new Table($out);
++		$obj = new Table($out);
+ 	}
++	return $obj;
+ }
+ 
+ // Comma-separated table
+ function & Factory_YTable(& $root, $text)
+ {
+ 	if ($text == ',') {
+-		return Factory_Inline($text);
++		$obj = Factory_Inline($text);
+ 	} else {
+-		return new YTable(csv_explode(',', substr($text, 1)));
++		$obj = new YTable(csv_explode(',', substr($text, 1)));
+ 	}
++	return $obj;
+ }
+ 
+ function & Factory_Div(& $root, $text)
+@@ -143,7 +147,8 @@
+ 		// Usual code
+ 		if (preg_match('/^\#([^\(]+)(?:\((.*)\))?/', $text, $matches) &&
+ 		    exist_plugin_convert($matches[1])) {
+-			return new Div($matches);
++			$obj = new Div($matches);
++			return $obj;
+ 		}
+ 	} else {
+ 		// Hack code
+@@ -152,15 +157,18 @@
+ 			$len  = strlen($matches[3]);
+ 			$body = array();
+ 			if ($len == 0) {
+-				return new Div($matches); // Seems legacy block plugin
++				$obj = new Div($matches); // Seems legacy block plugin
++				return $obj;
+ 			} else if (preg_match('/\{{' . $len . '}\s*\r(.*)\r\}{' . $len . '}/', $text, $body)) { 
+ 				$matches[2] .= "\r" . $body[1] . "\r";
+-				return new Div($matches); // Seems multiline-enabled block plugin
++				$obj = new Div($matches); // Seems multiline-enabled block plugin
++				return $obj;
+ 			}
+ 		}
+ 	}
+ 
+-	return new Paragraph($text);
++	$obj = new Paragraph($text);
++	return $obj;
+ }
+ 
+ // Inline elements
+diff -u plus.orig/lib/file.php plus.E_ALL.dev/lib/file.php
+--- plus.orig/lib/file.php	2007-06-04 05:25:13.000000000 -0400
++++ plus.E_ALL.dev/lib/file.php	2007-06-15 14:29:36.312500000 -0400
+@@ -41,7 +41,9 @@
+ 
+ 		if ($join) {
+ 			// Returns a value
+-			$result = str_replace("\r", '', fread($fp, filesize($path)));
++			if (filesize($path) > 0) {
++				$result = str_replace("\r", '', fread($fp, filesize($path)));
++			}
+ 		} else {
+ 			// Returns an array
+ 			// Removing line-feeds: Because file() doesn't remove them.
+@@ -221,8 +223,8 @@
+ function get_this_time_links($post,$diff)
+ {
+ 	$links = array();
+-	$post_links = replace_plugin_link2null($post);
+-	$diff_links = get_link_list($diff);
++	$post_links = (array)replace_plugin_link2null($post);
++	$diff_links = (array)get_link_list($diff);
+ 
+ 	foreach($diff_links as $d) {
+ 		foreach($post_links as $p) {
+diff -u plus.orig/lib/html.php plus.E_ALL.dev/lib/html.php
+--- plus.orig/lib/html.php	2007-06-04 05:25:12.875000000 -0400
++++ plus.E_ALL.dev/lib/html.php	2007-06-15 14:21:30.093750000 -0400
+@@ -282,7 +282,7 @@
+ 		}
+ 		$add_notimestamp .= '&nbsp;';
+ 	}
+-	$refpage = htmlspecialchars($vars['refpage']);
++	$refpage = isset($vars['refpage']) ? htmlspecialchars($vars['refpage']) : '';
+ 	$add_assistant = edit_form_assistant();
+ 
+ 	$body = <<<EOD
+Common subdirectories: plus.orig/lib/ua and plus.E_ALL.dev/lib/ua
+Common subdirectories: plus.orig/lib/ykcee and plus.E_ALL.dev/lib/ykcee

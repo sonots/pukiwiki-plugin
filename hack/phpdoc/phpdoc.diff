@@ -1,0 +1,1263 @@
+Common subdirectories: lib.orig/.svn and lib/.svn
+diff -u lib.orig/backup.php lib/backup.php
+--- lib.orig/backup.php	2007-07-10 19:45:38.671875000 +0900
++++ lib/backup.php	2007-07-10 19:46:20.765625000 +0900
+@@ -7,16 +7,17 @@
+  *
+  * バックアップを管理する
+  *
+- * @package org.pukiwiki
++ * @package pukiwiki
+  * @access  public
+  * @author
+  * @create
+  * @version $Id: backup.php,v 1.12.4 2006/04/27 17:58:00 upk Exp $
+- * Copyright (C)
+- *   2005-2006 PukiWiki Plus! Team
+- *   2002-2006 PukiWiki Developers Team
+- *   2001-2002 Originally written by yu-ji
+- * License: GPL v2 or (at your option) any later version
++ * @copyright Copyright (C)
++ *  - 2005-2006 PukiWiki Plus! Team
++ *  - 2002-2006 PukiWiki Developers Team
++ *  - 2001-2002 Originally written by yu-ji
++ * @license http://www.gnu.org/licenses/gpl.html 
++ *          License: GPL v2 or (at your option) any later version
+  **/
+ 
+ /**
+@@ -192,6 +193,9 @@
+ if (extension_loaded('zlib')) {
+ 	// ファイルシステム関数
+ 	// zlib関数を使用
++/**
++ * バックアップファイル拡張子
++ */
+ 	define('BACKUP_EXT', '.gz');
+ 
+ /**
+diff -u lib.orig/file.php lib/file.php
+--- lib.orig/file.php	2007-07-10 20:04:19.109375000 +0900
++++ lib/file.php	2007-07-10 20:04:54.390625000 +0900
+@@ -1,31 +1,60 @@
+ <?php
+-// PukiWiki - Yet another WikiWikiWeb clone.
+-// $Id: file.php,v 1.78.31 2007/06/17 16:56:00 upk Exp $
+-// Copyright (C)
+-//   2005-2007 PukiWiki Plus! Team
+-//   2002-2007 PukiWiki Developers Team
+-//   2001-2002 Originally written by yu-ji
+-// License: GPL v2 or (at your option) any later version
+-//
+-// File related functions
+-// Plus!NOTE:(policy)not merge official cvs(1.77->1.78) See Question/181
+-
+-// RecentChanges
++/** 
++ * File related functions
++ *
++ * PukiWiki - Yet another WikiWikiWeb clone.
++ *
++ * Plus!NOTE:(policy)not merge official cvs(1.77->1.78) See Question/181
++ *
++ * @version $Id: file.php,v 1.78.31 2007/06/17 16:56:00 upk Exp $
++ * @copyright Copyright (C)
++ *  - 2005-2007 PukiWiki Plus! Team
++ *  - 2002-2007 PukiWiki Developers Team
++ *  - 2001-2002 Originally written by yu-ji
++ * @license http://www.gnu.org/licenses/gpl.html 
++ *          License: GPL v2 or (at your option) any later version
++ * @package pukiwiki
++ */
++
++/**
++ * Maximum number in RecentChanges
++ */
+ define('PKWK_MAXSHOW_ALLOWANCE', 10);
++/**
++ * RecentChanges cache file
++ */
+ define('PKWK_MAXSHOW_CACHE', 'recent.dat');
+ 
+-// XHTML entities
++/**
++ * XHTML entities
++ */
+ define('PKWK_ENTITIES_REGEX_CACHE', 'entities.dat');
+ 
+-// AutoLink 
++/**
++ * AutoLink cache file
++ */
+ define('PKWK_AUTOLINK_REGEX_CACHE',  'autolink.dat');
++/**
++ * AutoAlias cache file
++ */
+ define('PKWK_AUTOALIAS_REGEX_CACHE', 'autoalias.dat');
++/**
++ * Glossary cache file
++ */
+ define('PKWK_GLOSSARY_REGEX_CACHE',  'glossary.dat');
+-
+-// AutoAlias AutoBase cache
++/**
++ * AutoBaseAlias cache file
++ */
+ define('PKWK_AUTOBASEALIAS_CACHE', 'autobasealias.dat');
+ 
+-// Get source(wiki text) data of the page
++/**
++ * Get source(wiki text) data of the page
++ * 
++ * @param string $page pagename
++ * @param boolean $lock lock file on reading
++ * @param boolean $join join lines into a string
++ * @return array|string lines of source (each line have "\n" at the end) and a joined source. 
++ */
+ function get_source($page = NULL, $lock = TRUE, $join = FALSE)
+ {
+ 	$result = $join ? '' : array();
+@@ -59,24 +88,61 @@
+ 	return $result;
+ }
+ 
+-// Get last-modified filetime of the page
++/**
++ * Get last-modified filetime of the page
++ *
++ * @param string $page pagename
++ * @return int filemtime or 0 if page does not exist
++ */
+ function get_filetime($page)
+ {
+ 	return is_page($page) ? filemtime(get_filename($page)) : 0;
+ }
+ 
+-// Get physical file name of the page
++/**
++ * Get physical file name of the page
++ *
++ * @param string $page pagename
++ * @return string encoded local path file name
++ */
+ function get_filename($page)
+ {
+ 	return DATA_DIR . encode($page) . '.txt';
+ }
+ 
+-// Put a data(wiki text) into a physical file(diff, backup, text)
++/**
++ * Put a data(wiki text) into a physical file(diff, backup, text)
++ *
++ * @param string $page
++ * @param string $postdata contents to be written
++ * @param boolean $notimestamp do not update timestamp
++ * @return void
++ * @uses is_page
++ * @uses make_str_rules
++ * @uses do_diff
++ * @uses get_this_time_links
++ * @uses postdata_write
++ * @uses file_write
++ * @uses make_backup
++ * @uses tb_send
++ * @uses links_update
++ * @uses autolink_pattern_write
++ * @uses get_autolink_pattern
++ * @uses get_autoglossaries
++ * @uses get_glossary_pattern
++ * @uses log_write
++ * @global boolean trackback. TrackBack is enabled or not
++ * @global boolean autoalias. AutoAlias is enabled or not
++ * @global string aliaspage. AutoAlias config page (usually AutoAliasname)
++ * @global boolean autoglossary. AutoGlossary is enabled or not
++ * @global string glossarypage. AugoGlossary config page (usually Glossary)
++ * @global array use_spam_check. Spam check config (enabled or not)
++ */
+ function page_write($page, $postdata, $notimestamp = FALSE)
+ {
+-	global $trackback, $autoalias, $aliaspage;
+-	global $autoglossary, $glossarypage;
+-	global $use_spam_check;
++	global $trackback, $autoalias, $aliaspage,
++	       $autoglossary, $glossarypage,
++	       $use_spam_check;
+ 
+ 	// if (PKWK_READONLY) return; // Do nothing
+ 	if (auth::check_role('readonly')) return; // Do nothing
+@@ -159,6 +225,18 @@
+ 	log_write('update',$page);
+ }
+ 
++/**
++ * Get newly added links from diff format text
++ *
++ * @param string $diffdata diff format text such as
++ * <pre>
++ * - minus
++ * + plus
++ * </pre>
++ * @return array|null array $links or null if no link
++ * @uses get_diff_lines
++ * @global string script. PukiWiki script URI
++ */
+ function get_link_list($diffdata)
+ {
+ 	global $script;
+@@ -193,6 +271,18 @@
+ 	return $links;
+ }
+ 
++/**
++ * Get diff lines from diff format text
++ *
++ * @param string $diffdata diff format text
++ * <pre>
++ * - minus
++ * + plus
++ * </pre>
++ * @return array array($plus, $minus)
++ *  - string $plus +lines
++ *  - string $minus -lines
++ */
+ function get_diff_lines($diffdata)
+ {
+ 	$_diff = explode("\n", $diffdata);
+@@ -202,6 +292,15 @@
+ 	return array($plus, $minus);
+ }
+ 
++/**
++ * Get links in a wiki source text after replacing some plugins into null plugin
++ *
++ * Used when TrackBack Ping and SPAM Check are processed
++ *
++ * @param string $data a wiki source text
++ * @return array array $links
++ * @global array exclude_link_plugin. plugins to be replaced into null plugin
++ */
+ function replace_plugin_link2null($data)
+ {
+ 	global $exclude_link_plugin;
+@@ -220,6 +319,16 @@
+ 	return $links;
+ }
+ 
++/**
++ * Get newly added links this time
++ * 
++ * @param string $post a posted new wiki source text
++ * @param string $diff a diff format text (diff between old and new source)
++ * @return array array $links
++ * @uses replace_plugin_link2null
++ * @uses get_link_list
++ * @see do_diff
++ */
+ function get_this_time_links($post,$diff)
+ {
+ 	$links = array();
+@@ -238,7 +347,16 @@
+ 	return $links;
+ }
+ 
+-// Modify original text with user-defined / system-defined rules
++/**
++ * Modify original text with user-defined / system-defined rules
++ *
++ * @param string $source wiki source text
++ * @return string replaced text
++ * @global string str_rules. Replacing rules. 
++ * @global boolean fixed_heading_anchor. Fixed heading anchor is enabled or not. 
++ * @see rules.ini.php for $str_rules
++ * @see pukiwiki.ini.php for $fixed_heading_anchor
++ */
+ function make_str_rules($source)
+ {
+ 	global $str_rules, $fixed_heading_anchor;
+@@ -297,7 +415,12 @@
+ 	return implode("\n", $lines);
+ }
+ 
+-// Generate ID
++/**
++ * Generate fixed heading anchor id randomly
++ *
++ * @param string $seed usually heading strings
++ * @return string A random alphabetic letter + 7 letters of random strings
++ */
+ function generate_fixed_heading_anchor_id($seed)
+ {
+ 	// A random alphabetic letter + 7 letters of random strings from md()
+@@ -306,8 +429,16 @@
+ 		mt_rand(0, 24), 7);
+ }
+ 
+-// Read top N lines as an array
+-// (Use PHP file() function if you want to get ALL lines)
++/**
++ * Read top N lines as an array
++ *
++ * @param string  $file filename
++ * @param int     $count number of executed fgets, generally number of lines
++ * @param boolean $lock use lock or not 
++ * @param int     $buffer number of bytes to be read in one fgets
++ * @see file() Use PHP file() function if you want to get ALL lines
++ * @return array lines of contents
++ */
+ function file_head($file, $count = 1, $lock = TRUE, $buffer = 8192)
+ {
+ 	$array = array();
+@@ -329,7 +460,24 @@
+ 	return $array;
+ }
+ 
+-// Output to a file
++/**
++ * Output to a file
++ *
++ * @param string $dir directory such as DATA_DIR, DIFF_DIR
++ * @param string $page pagename
++ * @param string $str contents to be written
++ * @param boolean $notimestamp do not update timestamp
++ * @return void
++ * @uses auth::check_role
++ * @uses string_bracket
++ * @uses encode
++ * @uses file_exists
++ * @uses add_recent
++ * @uses lastmodified_add
++ * @uses is_page
++ * @uses pkwk_touch_file
++ * @uses pkwk_mail_notify
++ */
+ function file_write($dir, $page, $str, $notimestamp = FALSE)
+ {
+ 	global $update_exec;
+@@ -433,7 +581,15 @@
+ 	is_page($page, TRUE); // Clear is_page() cache
+ }
+ 
+-// Update RecentDeleted
++/**
++ * Add a page to a recent page such as RecentChanges, RecentDeleted
++ *
++ * @param string $page page to be added to log
++ * @param string $recentpage log page
++ * @param string $subject additional comment
++ * @param int $limit number of limits to be logged
++ * @return void
++ */
+ function add_recent($page, $recentpage, $subject = '', $limit = 0)
+ {
+ 	// if (PKWK_READONLY || $limit == 0 || $page == '' || $recentpage == '' ||
+@@ -473,8 +629,22 @@
+ 	@fclose($fp);
+ }
+ 
+-// Update PKWK_MAXSHOW_CACHE itself (Add or renew about the $page) (Light)
+-// Use without $autolink
++/**
++ * Update PKWK_MAXSHOW_CACHE(recent.dat) and $whatsnew(RecentChanges) (Light)
++ * Use without $autolink
++ *
++ * @param string $update updated page, added to log file
++ * @param string $remove deleted page, removed from log file
++ * @return void
++ * @global int maxshow. Number of logs in $whatsnew
++ * @global string whatsnew. Whatsnew pagename (usually RecentChanges)
++ * @global boolean autolink. AutoLink is enabled or not
++ * @global boolean autobasealias. AutoBaseAlias is enabled or not
++ * @uses put_lastmodified
++ * @uses file_head
++ * @uses pkwk_touch_file
++ * @since PukiWiki 1.4.7
++ */
+ function lastmodified_add($update = '', $remove = '')
+ {
+ 	global $maxshow, $whatsnew, $autolink, $autobasealias;
+@@ -552,7 +722,18 @@
+ 	@fclose($fp);
+ }
+ 
+-// Update RecentChanges
++/**
++ * Update RecentChanges
++ *
++ * Update PKWK_AUTOLINK_REGEX_CACHE(autolink.dat) and PKWK_AUTOBASEALIS_CACHE(autobasealias.dat), too
++ *
++ * @global int maxshow. Number of logs in $whatsnew
++ * @global string whatsnew. Whatsnew pagename (usually RecentChanges)
++ * @global boolean autolink. AutoLink is enabled or not
++ * @global boolean atuobasealias. AutoBaseAlias is enabled or not
++ * @uses auth::check_role
++ * @uses get_existpages
++ */
+ function put_lastmodified()
+ {
+ 	global $maxshow, $whatsnew, $autolink, $autobasealias;
+@@ -632,7 +813,17 @@
+ 	}
+ }
+ 
+-// Update AutoBaseAlias data
++/**
++ * Update AutoBaseAlias data
++ * 
++ * @param string $filename log file, usually CACHE_DIR.PKWK_AUTOBASEALIAS_CACHE(autobasealias.dat)
++ * @param array &$pages existpages
++ * @return void
++ * @global string autobasealias_nonlist. non_list (ignore pages) for AutoBaseAlias
++ * @uses get_short_pagename
++ * @see get_existpages
++ * @see pukiwiki.ini.php for $autobasealias_nonlist
++ */
+ function autobasealias_write($filename, &$pages)
+ {
+ 	global $autobasealias_nonlist;
+@@ -657,7 +848,15 @@
+ 	@fclose($fp);
+ }
+ 
+-// Update autolink data
++/**
++ * Update autolink data
++ *
++ * @param string $filename log file, usually CACHE_DIR.PKWK_AUTOLINK_REGEX_CACHE(autolink.dat)
++ * @param array $autolink_pattern autolink patten to be saved
++ * @see get_autolink_pattern
++ * @see get_autoglossary_pattern
++ * @return void
++ */
+ function autolink_pattern_write($filename, $autolink_pattern)
+ {
+ 	list($pattern, $pattern_a, $forceignorelist) = $autolink_pattern;
+@@ -674,7 +873,16 @@
+ 	@fclose($fp);
+ }
+ 
+-// Get elapsed date of the page
++/**
++ * Get elapsed date of the page
++ *
++ * @param string $page pagename
++ * @param boolean $sw add <small> tag or not
++ * @global boolean show_passage. get passage or not
++ * @return string 
++ * @uses get_filetime
++ * @uses get_passage
++ */
+ function get_pg_passage($page, $sw = TRUE)
+ {
+ 	global $show_passage;
+@@ -686,7 +894,13 @@
+ 	return $sw ? '<small>' . $pg_passage . '</small>' : ' ' . $pg_passage;
+ }
+ 
+-// Last-Modified header
++/**
++ * Send Last-Modified HTTP header
++ *
++ * @param string $page pagename
++ * @global boolean lastmod. Run this function or not
++ * @return void
++ */
+ function header_lastmod($page = NULL)
+ {
+ 	global $lastmod;
+@@ -698,7 +912,13 @@
+ 	}
+ }
+ 
+-// Get a page list of this wiki
++/**
++ * Get a page list of this wiki
++ * 
++ * @param string $dir directory name
++ * @param string $ext common file extension
++ * @return array pagenames
++ */
+ function get_existpages($dir = DATA_DIR, $ext = '.txt')
+ {
+ 	$aryret = array();
+@@ -718,7 +938,11 @@
+ 	return $aryret;
+ }
+ 
+-// Get PageReading(pronounce-annotated) data in an array()
++/**
++ * Get PageReading(pronounce-annotated) data in an array()
++ *
++ * @return array associative array whose keys are pagenames and values are readings
++ */
+ function get_readings()
+ {
+ 	global $pagereading_enable, $pagereading_kanji2kana_converter;
+@@ -879,7 +1103,13 @@
+ 	return $readings;
+ }
+ 
+-// Get a list of encoded files (must specify a directory and a suffix)
++/**
++ * Get a list of encoded files (must specify a directory and a suffix)
++ * 
++ * @param string $dir directory name
++ * @param string $ext common file extension
++ * @return array file paths which each path is as "$dir . filename"
++ */
+ function get_existfiles($dir, $ext)
+ {
+ 	$pattern = '/^(?:[0-9A-F]{2})+' . preg_quote($ext, '/') . '$/';
+@@ -892,7 +1122,15 @@
+ 	return $aryret;
+ }
+ 
+-// Get a list of related pages of the page
++/**
++ * Get a list of related pages of the page
++ * 
++ * @param string $page
++ * @return array
++ * @uses links_get_related_db
++ * @global array vars. string $vars['page'] pagename
++ * @global array related. If possible, get related pages generated by make_link(), too
++ */
+ function links_get_related($page)
+ {
+ 	global $vars, $related;
+@@ -909,8 +1147,15 @@
+ 	return $links[$page];
+ }
+ 
+-// _If needed_, re-create the file to change/correct ownership into PHP's
+-// NOTE: Not works for Windows
++/**
++ * _If needed_, re-create the file to change/correct ownership into PHP's
++ * NOTE: Not works for Windows
++ *
++ * @param string $filename
++ * @param boolean $preserve_time do not update timestamp
++ * @return void
++ * @since PukiWiki 1.4.6
++ */
+ function pkwk_chown($filename, $preserve_time = TRUE)
+ {
+ 	static $php_uid; // PHP's UID
+@@ -972,7 +1217,16 @@
+ 	return $result;
+ }
+ 
+-// touch() with trying pkwk_chown()
++/**
++ * touch() with trying pkwk_chown()
++ *
++ * @param string $filename
++ * @param int $time mtime
++ * @param int $atime atime
++ * @return void
++ * @uses pkwk_chown
++ * @since PukiWiki 1.4.6
++ */
+ function pkwk_touch_file($filename, $time = FALSE, $atime = FALSE)
+ {
+ 	// Is the owner incorrected and unable to correct?
+diff -u lib.orig/func.php lib/func.php
+--- lib.orig/func.php	2007-07-10 19:45:38.750000000 +0900
++++ lib/func.php	2007-07-10 20:01:22.484375000 +0900
+@@ -1,20 +1,40 @@
+ <?php
+-// PukiWiki Plus! - Yet another WikiWikiWeb clone.
+-// $Id: func.php,v 1.86.20 2007/06/02 14:38:00 upk Exp $
+-// Copyright (C)
+-//   2005-2007 PukiWiki Plus! Team
+-//   2002-2007 PukiWiki Developers Team
+-//   2001-2002 Originally written by yu-ji
+-// License: GPL v2 or (at your option) any later version
+-//
+-// General functions
+-
++/**
++ * General functions
++ *
++ * PukiWiki Plus! - Yet another WikiWikiWeb clone.
++ *
++ * @version $Id: func.php,v 1.86.20 2007/06/02 14:38:00 upk Exp $
++ * @copyright Copyright (C)
++ *  - 2005-2007 PukiWiki Plus! Team
++ *  - 2002-2007 PukiWiki Developers Team
++ *  - 2001-2002 Originally written by yu-ji
++ * @license http://www.gnu.org/licenses/gpl.html
++ *          GPL v2 or (at your option) any later version
++ * @package pukiwiki
++ */
++ 
++/**
++ * Check if the str is interwiki or not
++ *
++ * @param string $str
++ * @return boolean
++ * @global string Syntax definition of InterWikiName, @see init.php
++ * @see is_url
++ */
+ function is_interwiki($str)
+ {
+ 	global $InterWikiName;
+ 	return preg_match('/^' . $InterWikiName . '$/', $str);
+ }
+ 
++/**
++ * Check if the str is pagename or not
++ *
++ * @param string $str
++ * @return boolean
++ * @global string Syntax definition of BracketName (or PageName), @see init.php
++ */
+ function is_pagename($str)
+ {
+ 	global $BracketName;
+@@ -39,19 +59,44 @@
+ 	return $is_pagename;
+ }
+ 
++/**
++ * Check if the str is url or not
++ *
++ * @param string $str
++ * @param boolean $only_http check only http, and https. Otherwise, check http, https, ftp, and news
++ * @return boolean
++ */
+ function is_url($str, $only_http = FALSE)
+ {
+ 	$scheme = $only_http ? 'https?' : 'https?|ftp|news';
+ 	return preg_match('/^(' . $scheme . ')(:\/\/[-_.!~*\'()a-zA-Z0-9;\/?:\@&=+\$,%#]*)$/', $str);
+ }
+ 
+-// If the page exists
++/**
++ * Check if the page exists
++ *
++ * @param string $page
++ * @param boolean $clearcache clearcache or not
++ * @return boolean
++ * @uses clearstatcache
++ * @uses get_filename
++ */
+ function is_page($page, $clearcache = FALSE)
+ {
+ 	if ($clearcache) clearstatcache();
+ 	return file_exists(get_filename($page));
+ }
+ 
++/**
++ * Check if the page is editable or not
++ *
++ * @param string $page
++ * @return boolean
++ * @static array $is_editable
++ * @global array special pages which can not be edited
++ * @uses is_pagename
++ * @uses is_freeze
++ */
+ function is_editable($page)
+ {
+ 	global $cantedit;
+@@ -68,6 +113,14 @@
+ 	return $is_editable[$page];
+ }
+ 
++/**
++ * Check if the page is frozen or not
++ *
++ * @param string $page
++ * @param boolean $clearcache clear memory cache
++ * @static array $is_freeze
++ * @return boolean
++ */
+ function is_freeze($page, $clearcache = FALSE)
+ {
+ 	global $function_freeze;
+@@ -95,19 +148,31 @@
+ 	}
+ }
+ 
+-// Handling $non_list
+-// $non_list will be preg_quote($str, '/') later.
++/**
++ * Check if the page is in the non_list
++ *
++ * @param string $page
++ * @global string the preg definition of non_list (ignore pages). @see pukiwiki.ini.php
++ * @return boolean
++ */
+ function check_non_list($page = '')
+ {
+ 	global $non_list;
+ 	static $regex;
+-
++	// $non_list will be preg_quote($str, '/') later.
+ 	if (! isset($regex)) $regex = '/' . $non_list . '/';
+ 
+ 	return preg_match($regex, $page);
+ }
+ 
+-// Auto template
++/**
++ * Get template contents for a new page
++ *
++ * @param string $page the new page
++ * @return string template contents
++ * @global boolean use this auto_template function or not
++ * @global array the pagename rules to be used as templates. @see pukiwiki.ini.php
++ */
+ function auto_template($page)
+ {
+ 	global $auto_template_func, $auto_template_rules;
+@@ -209,13 +274,34 @@
+ 	return $regex; // For all words
+ }
+ 
+-// 'Search' main function
++/**
++ * 'Search' main function
++ *
++ * @param string $word search word
++ * @param enum $type 'AND' or 'OR'
++ * @param boolean $non_format get the matched pages in array, not html
++ * @param string $base search only pages whose prefixes are $base . '/' 
++ * @return string|array the search result in html or the matched pages
++ * @uses get_search_words
++ * @uses get_existpages
++ * @uses auth::check_role
++ * @see search.inc.php
++ * @global string script. PukiWiki Script URI. @see get_script_uri()
++ * @global string whatsnew. RecentChanges
++ * @global string non_list. ignore pages
++ * @global string search_non_list. non_list for searching
++ * @global boolean search_auth. search authorized pages, too
++ * @global boolean show_passage. show time passage in the html result
++ * @global boolean search_word_color. link pages which highlight search words
++ * @global boolean ajax. use ajax to show search results in pages on mouse
++ * @global array _string. messages
++ */
+ function do_search($word, $type = 'AND', $non_format = FALSE, $base = '')
+ {
+-	global $script, $whatsnew, $non_list, $search_non_list;
+- 	global $search_auth, $show_passage, $search_word_color, $ajax;
+-//	global $_msg_andresult, $_msg_orresult, $_msg_notfoundresult;
+-	global $_string;
++	global $script, $whatsnew, $non_list, $search_non_list,
++	       $search_auth, $show_passage, $search_word_color, $ajax,
++	       $_string;
++//	       $_msg_andresult, $_msg_orresult, $_msg_notfoundresult;
+ 
+ 	$retval = array();
+ 
+@@ -313,14 +399,29 @@
+ 	return $retval;
+ }
+ 
+-// Argument check for program
++/**
++ * Argument (cmd) check for program
++ *
++ *  global $vars; $vars['cmd'] == $str would be enough
++ *
++ * @param string $str cmd name
++ * @return boolean
++ */
+ function arg_check($str)
+ {
+ 	global $vars;
+ 	return isset($vars['cmd']) && (strpos($vars['cmd'], $str) === 0);
+ }
+ 
+-// Encode page-name
++/**
++ * Encode page-name
++ *
++ *  strtoupper(bin2hex($key))
++ *
++ * @param string $key a string such as a pagename
++ * @return string
++ * @see decode
++ */
+ function encode($key)
+ {
+ 	return ($key == '') ? '' : strtoupper(bin2hex($key));
+@@ -328,13 +429,27 @@
+ 	// But PHP 4.3.10 says 'Warning: unpack(): Type H: outside of string in ...'
+ }
+ 
+-// Decode page name
++/**
++ * Decode page name
++ *
++ *  hex2bin($key)
++ * 
++ * @param string $key encoded string
++ * @return string decoded string
++ * @see encode
++ * @uses hex2bin
++ */
+ function decode($key)
+ {
+ 	return hex2bin($key);
+ }
+ 
+-// Inversion of bin2hex()
++/**
++ * Inversion of bin2hex()
++ *
++ * @param string $hex_string
++ * @return string
++ */
+ function hex2bin($hex_string)
+ {
+ 	// preg_match : Avoid warning : pack(): Type H: illegal hex digit ...
+@@ -343,7 +458,13 @@
+ 		pack('H*', (string)$hex_string) : $hex_string;
+ }
+ 
+-// Remove [[ ]] (brackets)
++/**
++ * Remove [[ ]] (brackets)
++ *
++ * @deprecated use this function to support PukiWiki 1.3
++ * @param string $str [[pagename]]
++ * @return string 
++ */
+ function strip_bracket($str)
+ {
+ 	$match = array();
+@@ -354,7 +475,17 @@
+ 	}
+ }
+ 
+-// Create list of pages
++/**
++ * Create list of pages (html)
++ *
++ * @param array $pages
++ * @param string $cmd cmd used for href
++ * @param boolean $withfilename print physical filename, too
++ * @return string page_list html
++ * @uses get_readings if $pagereading_enable is TRUE
++ * @uses get_pg_passage
++ * @see list.inc.php, filelist.inc.php
++ */
+ function page_list($pages, $cmd = 'read', $withfilename = FALSE)
+ {
+ 	global $script, $list_index;
+@@ -452,7 +583,12 @@
+ 	return $retval;
+ }
+ 
+-// Show text formatting rules
++/**
++ * Show text formatting rules
++ *
++ * @global string TextFormattingRules page
++ * @return string TextFormattingRules html
++ */
+ function catrule()
+ {
+ 	global $rule_page;
+@@ -465,7 +601,12 @@
+ 	}
+ }
+ 
+-// Show (critical) error message
++/**
++ * Show (critical) error message (then exit)
++ *
++ * @param string $msg error message
++ * @return void
++ */
+ function die_message($msg)
+ {
+ 	global $skin_file;
+@@ -504,14 +645,29 @@
+ 	exit;
+ }
+ 
+-// Have the time (as microtime)
++/**
++ * Get the current time in micro sec
++ *
++ * @return float time in micro sec
++ */
+ function getmicrotime()
+ {
+ 	list($usec, $sec) = explode(' ', microtime());
+ 	return ((float)$sec + (float)$usec);
+ }
+ 
+-// Get the date
++/**
++ * Get the date
++ *
++ * Example)
++ * <code>
++ * get_date('D, d M Y H:i:s T', get_filetime($_page))
++ * </code>
++ *
++ * @param string $format date format
++ * @param int timestamp or current UTIME if not specified
++ * @uses get_zontime_offset
++ */ 
+ function get_date($format, $timestamp = NULL)
+ {
+ 	$esc = '';
+@@ -533,6 +689,12 @@
+ 	return str_replace('+0000', $zonetime, $str);
+ }
+ 
++/**
++ * Get zontime as a string as +0900
++ *
++ * @param int $zontime
++ * @return string
++ */
+ function get_zonetime_offset($zonetime)
+ {
+ 	$pm = ($zonetime < 0) ? '-' : '+';
+@@ -542,7 +704,16 @@
+ 	return sprintf('%s%02d%02d', $pm,$h,$m);
+ }
+ 
+-// Format date string
++/**
++ * Format date string
++ *
++ * @global string date_format. @see pukiwiki.ini.php
++ * @global string time_format. @see pukiwiki.ini.php
++ * @global string weeklabels. @see lib/resource.php
++ * @param int $val time in UTIME. ZONTIME will be added. 
++ * @param boolean $paren put () on the both side of the generated string
++ * @return string the formatted date string as 2007-07-08 (Sun) 19:47:07
++ */
+ function format_date($val, $paren = FALSE)
+ {
+ 	global $date_format, $time_format, $weeklabels;
+@@ -556,14 +727,27 @@
+ 	return $paren ? '(' . $date . ')' : $date;
+ }
+ 
+-// Get short pagename(last token without '/')
++/**
++ * Get short pagename(last token without '/') or basename
++ *
++ * @param string $fullpagename
++ * @return string short pagename (or basename)
++ */
+ function get_short_pagename($fullpagename)
+ {
+ 	$pagestack = explode('/', $fullpagename);
+ 	return array_pop($pagestack);
+ }
+ 
+-// Get short string of the passage, 'N seconds/minutes/hours/days/years ago'
++/**
++ * Get the time passage from the given timestamp to the current time. 
++ *
++ * The passage format is as 'N seconds/minutes/hours/days/years ago'
++ *
++ * @param int $time timestamp
++ * @param boolean $paren put () on the both side of the output string
++ * @return string passage
++ */
+ function get_passage($time, $paren = TRUE)
+ {
+ 	static $units = array('m'=>60, 'h'=>24, 'd'=>1);
+@@ -579,7 +763,12 @@
+ 	return $paren ? '(' . $time . ')' : $time;
+ }
+ 
+-// Hide <input type="(submit|button|image)"...>
++/**
++ * Hide <input type="(submit|button|image)"...> to <input type="hidden"...>
++ *
++ * @param string $str target string
++ * @return string replaced string
++ */
+ function drop_submit($str)
+ {
+ 	return preg_replace('/<input([^>]+)type="(submit|button|image)"/i',
+@@ -658,23 +847,26 @@
+ }
+ 
+ 
+-// Generate one compact regex for quick reTRIEval,
+-// that just matches with all $array values.
+-//
+-// USAGE:
+-//   sort($array, SORT_STRING); // Keys are replaced, as we had expected
+-//   $regex = generate_trie_regex($array);
+-// ARGUMENTS:
+-//   $array  : (_sorted_ _string_ array)
+-//     array_keys($array) MUST BE _continuous integers started with 0_.
+-//     All $array values MUST BE strings.
+-//     Passing the reference, of the $array here, will save the memories,
+-//     from flood of recursive call.
+-//   $offset : (int) $array[$offset] is the first value to check
+-//   $sentry : (int) $array[$sentry - 1] is the last value to check  
+-//   $pos    : (int) Position of the letter to start checking. (0 = the first letter)
+-// REFERENCE:
+-//   http://en.wikipedia.org/wiki/Trie
++/**
++ * Generate one compact regex for quick reTRIEval,
++ * that just matches with all $array values.
++ *
++ * USAGE:
++ * <code>
++ *   sort($array, SORT_STRING); // Keys are replaced, as we had expected
++ *   $regex = generate_trie_regex($array);
++ * </code>
++ *
++ * @param array &$array (_sorted_ _string_ array)<br />
++ *     array_keys($array) MUST BE _continuous integers started with 0_.<br />
++ *     All $array values MUST BE strings.<br />
++ *     Passing the reference, of the $array here, will save the memories,<br />
++ *     from flood of recursive call.<br />
++ * @param int $offset $array[$offset] is the first value to check
++ * @param int $sentry $array[$sentry - 1] is the last value to check  
++ * @param int $pos    Position of the letter to start checking. (0 = the first letter)
++ * @link http://en.wikipedia.org/wiki/Trie
++ */
+ function generate_trie_regex(& $array, $offset = 0, $sentry = NULL, $pos = 0)
+ {
+ 	if (empty($array)) return '(?!)'; // Zero
+@@ -727,7 +919,16 @@
+ 	 return generate_trie_regex(& $pages, $start, $end, $pos);
+ }
+ 
+-// Load/get autoalias pairs
++/**
++ * Load/get autoalias pairs
++ *
++ * @param string $word alias name
++ * @return array
++ * if $word == '': array whose keys are alias names and values are array of real names<br />
++ * if $word != '': array of real names
++ * @uses get_autoaliases_from_aliaspage
++ * @uses get_autoaliases_from_autobasealias
++ */
+ function get_autoaliases($word = '')
+ {
+ 	global $autobasealias;
+@@ -746,7 +947,12 @@
+ 	return isset($pairs[$word]) ? $pairs[$word] : array();
+ }
+ 
+-// Load/get pairs of AutoBaseAlias
++/**
++ * Load/get pairs of AutoBaseAlias
++ *
++ * @return array array whose keys are alias names and values are array of real names
++ * @since PukiWiki Plus! 1.4.7plus-u3-i18n or 1.4.8plus-i18n
++ */
+ function get_autoaliases_from_autobasealias()
+ {
+ 	static $paris;
+@@ -757,7 +963,13 @@
+ 	return $pairs;
+ }
+ 
+-// Load/get setting pairs from AutoAliasName
++/**
++ * Load/get AutoAlias pairs from AutoAliasName
++ *
++ * @return array array whose keys are alias names and values are array of real names
++ * @global string AutoAliasName page
++ * @global int maximum number of aliases
++ */
+ function get_autoaliases_from_aliaspage()
+ {
+ 	global $aliaspage, $autoalias_max_words;
+@@ -795,7 +1007,16 @@
+ 	return $pairs;
+ }
+ 
+-// Load/get setting pairs from Glossary
++/**
++ * Load/get setting pairs from Glossary
++ *
++ * @param string glossary word
++ * @return array|string
++ * if $word == '': array of whose keys are words and values are their explanations respectively<br />
++ * if $word != '': explanation of the word
++ * @global string Glossary page
++ * @global int maximum number of glossary words
++ */
+ function get_autoglossaries($word = '')
+ {
+ 	global $glossarypage, $autoglossary_max_words;
+@@ -827,7 +1048,12 @@
+ 	return isset($pairs[$word]) ? $pairs[$word]:'';
+ }
+ 
+-// Get absolute-URI of this script
++/**
++ * Get the PukiWiki script URI
++ *
++ * @param string $init_uri Initialize script URI manually if want
++ * @return string script uri
++ */
+ function get_script_uri($init_uri = '')
+ {
+ 	global $script_directory_index;
+@@ -883,15 +1109,19 @@
+ 	return $script;
+ }
+ 
+-// Remove null(\0) bytes from variables
+-//
+-// NOTE: PHP had vulnerabilities that opens "hoge.php" via fopen("hoge.php\0.txt") etc.
+-// [PHP-users 12736] null byte attack
+-// http://ns1.php.gr.jp/pipermail/php-users/2003-January/012742.html
+-//
+-// 2003-05-16: magic quotes gpcの復元処理を統合
+-// 2003-05-21: 連想配列のキーはbinary safe
+-//
++/**
++ * Remove null(\0) bytes from variables
++ *
++ * NOTE: PHP had vulnerabilities that opens "hoge.php" via fopen("hoge.php\0.txt") etc.<br />
++ * [PHP-users 12736] null byte attack<br />
++ * {@link http://ns1.php.gr.jp/pipermail/php-users/2003-January/012742.html}<br />
++ *
++ * - 2003-05-16: magic quotes gpcの復元処理を統合
++ * - 2003-05-21: 連想配列のキーはbinary safe
++ *
++ * @param mixed $param
++ * @return mixed filtered param
++ */
+ function input_filter($param)
+ {
+ 	static $magic_quotes_gpc = NULL;
+@@ -907,12 +1137,27 @@
+ 	}
+ }
+ 
+-// Compat for 3rd party plugins. Remove this later
++/**
++ * @deprecated Compat for 3rd party plugins. Use input_filter
++ * @see input_filter
++ **/
+ function sanitize($param) {
+ 	return input_filter($param);
+ }
+ 
+-// Explode Comma-Separated Values to an array
++/**
++ * Explode Comma-Separated Values to an array
++ *
++ * Example)
++ * <code>
++ * csv_explode(',', 'A,"B,B",C') => array('A','B,B','C')
++ * </code>
++ *
++ * @param string $separator separator, usually ','
++ * @param string $string csv strings
++ * @return array array of exploded strings
++ * @see csv_implode
++ */
+ function csv_explode($separator, $string)
+ {
+ 	$retval = $matches = array();
+@@ -931,7 +1176,19 @@
+ 	return $retval;
+ }
+ 
+-// Implode an array with CSV data format (escape double quotes)
++/**
++ * Implode an array with CSV data format (escape double quotes)
++ *
++ * Example)
++ * <code>
++ * csv_implode(',', array('A','B,B','C')) => 'A,"B,B",C'
++ * </code>
++ *
++ * @param string $glue seperator, usually ','
++ * @param array $pieces
++ * @return string
++ * @see csv_explode
++ */
+ function csv_implode($glue, $pieces)
+ {
+ 	$_glue = ($glue != '') ? '\\' . $glue{0} : '';
+@@ -946,8 +1203,16 @@
+ 
+ //// Compat ////
+ 
+-// is_a --  Returns TRUE if the object is of this class or has this class as one of its parents
+-// (PHP 4 >= 4.2.0)
++/**
++ * is_a -- Checks if the object is of this class or has this class as one of its parents
++ *
++ * (PHP 4 >= 4.2.0)
++ *
++ * @param object|string $class The tested object or class name
++ * @param string $match The class name
++ * @return boolean Returns TRUE if the object is of this class or has this class as one of its parents, FALSE otherwise.
++ * @link http://php.net/is_a
++ */
+ if (! function_exists('is_a')) {
+ 
+ 	function is_a($class, $match)
+@@ -963,8 +1228,16 @@
+ 	}
+ }
+ 
+-// array_fill -- Fill an array with values
+-// (PHP 4 >= 4.2.0)
++/**
++ * array_fill -- Fill an array with values
++ *
++ * (PHP 4 >= 4.2.0)
++ * @param int $start_index The first index of the returned array 
++ * @param int $num Number of elements to insert 
++ * @param mixed Values to use filling 
++ * @return array Returns the filled array 
++ * @link http://php.net/array_fill
++ */
+ if (! function_exists('array_fill')) {
+ 
+ 	function array_fill($start_index, $num, $value)
+@@ -975,8 +1248,15 @@
+ 	}
+ }
+ 
+-// md5_file -- Calculates the md5 hash of a given filename
+-// (PHP 4 >= 4.2.0)
++/**
++ * md5_file -- Calculates the md5 hash of a given filename
++ *
++ * (PHP 4 >= 4.2.0)
++ *
++ * @param string $filename
++ * @return string
++ * @link http://php.net/md5_file
++ */
+ if (! function_exists('md5_file')) {
+ 
+ 	function md5_file($filename)
+@@ -991,8 +1271,15 @@
+ 	}
+ }
+ 
+-// sha1 -- Compute SHA-1 hash
+-// (PHP 4 >= 4.3.0, PHP5)
++/**
++ * sha1 -- Compute SHA-1 hash
++ *
++ * (PHP 4 >= 4.3.0, PHP5)
++ *
++ * @param string $str
++ * @return $str
++ * @link http://php.net/sha1
++ */
+ if (! function_exists('sha1')) {
+ 	if (extension_loaded('mhash')) {
+ 		function sha1($str)
+Common subdirectories: lib.orig/ua and lib/ua
+Common subdirectories: lib.orig/ykcee and lib/ykcee

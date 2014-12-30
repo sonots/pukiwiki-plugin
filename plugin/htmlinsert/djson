@@ -1,0 +1,23 @@
+<div id="container">${title=}</div>
+<script type="text/javascript" src="http://del.icio.us/feeds/json/${json=}"></script>
+<script type="text/javascript">
+function showImage(img){ return (function(){ img.style.display='inline' }) }
+
+var ul = document.createElement('ul')
+for (var i=0, post; post = Delicious.posts[i]; i++) {
+	var li = document.createElement('li')
+	var a = document.createElement('a')
+	a.setAttribute('href', post.u)
+	a.appendChild(document.createTextNode(post.d))
+	li.appendChild(a)
+	if (post.n != undefined) {
+		var br = document.createElement('br')
+		li.insertBefore(br, null)
+		var span = document.createElement('span')
+		span.appendChild(document.createTextNode(post.n))
+		li.insertBefore(span, null)
+	}
+	ul.appendChild(li)
+}
+document.getElementById('container').appendChild(ul)
+</script>

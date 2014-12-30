@@ -1,0 +1,139 @@
+Common subdirectories: lib.orig/.svn and lib/.svn
+diff -u lib.orig/func.php lib/func.php
+--- lib.orig/func.php	2007-05-30 01:05:47.656250000 -0400
++++ lib/func.php	2007-05-30 01:11:11.250000000 -0400
+@@ -751,19 +751,23 @@
+ 				if ($count == $max) break;
+ 				$name = trim($value[1]);
+ 				if (! isset($pairs[$name])) {
+-					++$count;
+-					$pairs[$name] = trim($value[2]);
+-				}
++					$paris[$name] = array();
++				} 
++				++$count;
++				$pairs[$name][] = trim($value[2]);
+ 				unset($matches[$key]);
+ 			}
+ 		}
++		foreach (array_keys($pairs) as $name) {
++			$pairs[$name] = array_unique($pairs[$name]);
++		}
+ 	}
+ 
+ 	// An array: All pairs
+ 	if ($word === '') return $pairs;
+ 
+ 	// A string: Seek the pair
+-	return isset($pairs[$word]) ? $pairs[$word]:'';
++	return isset($pairs[$word]) ? $pairs[$word] : array();
+ }
+ 
+ // Load/get setting pairs from Glossary
+diff -u lib.orig/link.php lib/link.php
+--- lib.orig/link.php	2007-05-30 00:43:07.906250000 -0400
++++ lib/link.php	2007-05-30 01:21:28.593750000 -0400
+@@ -75,9 +75,11 @@
+ 		if (is_a($_obj, 'Link_autolink')) { // 行儀が悪い
+ 			$rel_auto[] = $_obj->name;
+ 		} else if (is_a($_obj, 'Link_autoalias')) {
+-			$_alias = get_autoaliases($_obj->name);
+-			if (is_pagename($_alias)) {
+-				$rel_auto[] = $_alias;
++			$_aliases = get_autoaliases($_obj->name);
++			foreach ($_aliases as $_alias) {
++				if (is_pagename($_alias)) {
++					$rel_auto[] = $_alias;
++				}
+ 			}
+ 		} else {
+ 			$rel_new[]  = $_obj->name;
+@@ -161,20 +163,24 @@
+ 			    $_obj->name == $page || $_obj->name == '')
+ 				continue;
+ 
+-			$_name = $_obj->name;
+ 			if (is_a($_obj, 'Link_autoalias')) {
+-				$_alias = get_autoaliases($_obj->name);
+-				if (! is_pagename($_alias))
+-					continue;	// not PageName
+-				$_name = $_alias;
++				$_aliases = get_autoaliases($_obj->name);
++				foreach ($_aliases as $_alias) {
++					if (is_pagename($_alias)) {
++						$rel[] = $_alias;
++					}
++				}
++			} else {
++				$rel[] = $_obj->name;
+ 			}
+-			$rel[] = $_name;
++		}
++		$rel = array_unique($rel);
++		foreach ($rel as $_name) {
+ 			if (! isset($ref[$_name][$page]))
+ 				$ref[$_name][$page] = 1;
+ 			if (! is_a($_obj, 'Link_autolink'))
+ 				$ref[$_name][$page] = 0;
+ 		}
+-		$rel = array_unique($rel);
+ 		if (! empty($rel)) {
+ 			$fp = fopen(CACHE_DIR . encode($page) . '.rel', 'w')
+ 				or die_message('cannot write ' . htmlspecialchars(CACHE_DIR . encode($page) . '.rel'));
+diff -u lib.orig/make_link.php lib/make_link.php
+--- lib.orig/make_link.php	2007-05-30 00:43:07.875000000 -0400
++++ lib/make_link.php	2007-05-30 01:16:56.359375000 -0400
+@@ -730,7 +730,7 @@
+ 	var $forceignorepages = array();
+ 	var $auto;
+ 	var $auto_a; // alphabet only
+-	var $alias;
++	var $aliases;
+ 
+ 	function Link_autoalias($start)
+ 	{
+@@ -746,7 +746,7 @@
+ 		$this->auto = $auto;
+ 		$this->auto_a = $auto_a;
+ 		$this->forceignorepages = explode("\t", trim($forceignorepages));
+-		$this->alias = '';
++		$this->aliases = array();
+ 	}
+ 	function get_pattern()
+ 	{
+@@ -769,9 +769,9 @@
+ 	}
+ 	function toString()
+ 	{
+-		$this->alias = get_autoaliases($this->name);
+-		if ($this->alias != '') {
+-			$link = '[[' . $this->name . '>' . $this->alias . ']]';
++		$this->aliases = get_autoaliases($this->name);
++		if (! empty($this->aliases)) {
++			$link = '[[' . $this->name  . ']]';
+ 			return make_link($link);
+ 		}
+ 		return '';
+@@ -892,12 +892,21 @@
+ 	global $script, $vars, $link_compact, $related, $_symbol_noexists;
+ 
+ 	$s_page = htmlspecialchars(strip_bracket($page));
++	$r_page = rawurlencode($page);
++	if (! is_page($page)) {
++		$realpages = get_autoaliases(strip_bracket($page));
++		foreach ($realpages as $realpage) {
++			if (is_page($realpage)) {
++				$page = $realpage;
++				break;
++			}
++		}
++	}
+ 	$s_alias = ($alias == '') ? $s_page : $alias;
+ 
+ 	if ($page == '') return '<a href="' . $anchor . '">' . $s_alias . '</a>';
+ //	if ($page == '') return open_uri_in_new_window('<a href="' . $anchor . '">' . $s_alias . '</a>', 'make_pagelink');
+ 
+-	$r_page  = rawurlencode($page);
+ 	$r_refer = ($refer == '') ? '' : '&amp;refer=' . rawurlencode($refer);
+ 
+ 	if (! isset($related[$page]) && $page != $vars['page'] && is_page($page))

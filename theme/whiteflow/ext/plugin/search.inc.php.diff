@@ -1,0 +1,11 @@
+--- ../../../../../../pukiwiki147/plugin/search.inc.php	2006-10-21 20:41:12.000000000 -0500
++++ search.inc.php	2007-03-03 05:15:50.000000000 -0500
+@@ -6,7 +6,7 @@
+ 
+ // Allow search via GET method 'index.php?plugin=search&word=keyword'
+ // NOTE: Also allows DoS to your site more easily by SPAMbot or worm or ...
+-define('PLUGIN_SEARCH_DISABLE_GET_ACCESS', 1); // 1, 0
++define('PLUGIN_SEARCH_DISABLE_GET_ACCESS', 0); // 1, 0
+ 
+ define('PLUGIN_SEARCH_MAX_LENGTH', 80);
+ define('PLUGIN_SEARCH_MAX_BASE',   16); // #search(1,2,3,...,15,16)

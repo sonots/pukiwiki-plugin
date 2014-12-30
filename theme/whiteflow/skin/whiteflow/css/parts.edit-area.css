@@ -1,0 +1,554 @@
+@charset "utf-8";
+
+/*  Stylesheet for geckodev.org
+
+Creator: leva(http://www.geckodev.org/)
+License: X11 License
+
+/* #content > #edit-area - main contents */
+
+#content #edit-area{
+counter-reset:		article;}
+
+#content #edit-area *{
+line-height:		170%;}
+
+#content #edit-area p{
+margin:		20px 0px;}
+
+#content #edit-area h3{
+line-height:		150%;
+border:				solid #eee;
+border-width:		1px 0px;
+color:				#444;
+font-size:			160%;
+height:				1.5em;
+padding:			15px 20px 0px 0px;
+margin:				30px 0px;
+white-space:		nowrap;
+overflow:			hidden;}
+
+#content #edit-area h4{
+background:		white url(../img/star.png) left center no-repeat;
+font-size:		135%;
+padding-left:		40px;
+margin:		10px 0px;}
+
+#content #edit-area h5{
+font-size:		110%;
+margin:		10px 0px;
+color:			#a6a6a6;}
+
+#content #edit-area h6{
+font-size:		100%;
+margin:		10px;
+color:			#a6a6a6;}
+
+#content #edit-area h3::before{
+color:			#ddd;
+vertical-align:		top;
+font-family:		"Courier New", Courier, monospace;
+font-size:		360%;
+letter-spacing:		-5px;
+margin-right:		-0.35em;
+content:		"#"counter(article);
+counter-increment:	article;}
+
+#content #edit-area h3 a{
+color:			black;}
+
+#content #edit-area ul{
+list-style-image:	url(../img/arrow.png);}
+
+#content #edit-area ul li:hover{
+list-style-image:	url(../img/arrow2.png);}
+
+#content #edit-area ul ul,
+#content #edit-area ul ul li:hover{
+list-style-type:		none;
+list-style-image:	none;}
+
+#content > #additional + div.display ol{
+font-size:		90%;
+list-style:		none;
+padding-left:		2em;
+counter-reset:		ollist;}
+
+#content > #additional + div.display ol > li{
+counter-increment:	ollist;}
+
+#content > #additional + div.display ol > li::before{
+width:			1em;
+font-size:		120%;
+font-weight:		bold;
+font-family:		monospace;
+border:			1px solid #333;
+background-color:	#aaa;
+color:			white;
+padding:		1px 5px;
+margin:		0px 0.6em 0px -1.7em; /* about 1em list x-space*/
+content:		counters(ollist, ".");}
+
+#content > #additional + div.display ol > li:hover::before{
+background-color:	#395989;}
+
+#content > #additional + div.display #note ol > li::before{
+display:		none;}
+
+/* Editing Area */
+
+#edit-area div.options{
+text-align:		right;
+padding-right:		7%;}
+
+#content .work div#e2,
+#content .work div#e3{
+width:			90%;
+border:		1px solid #bebebe;
+font-size:		90%;
+padding:		0.6em 0em 0em 0.6em;
+margin:		0px 20px 20px 20px;}
+
+#content .work textarea{
+width:			90%;
+line-height:		170%;
+font-size:		90%;
+padding:		0.6em 0em 0em 0.6em;
+margin:		0px 20px 20px 20px;}
+
+	/* for Ajax */
+
+#realview_outer {
+float:			left;
+z-index:		10;
+margin:		30px;
+padding:		0px 20px;
+height:			300px;
+overflow:		scroll;
+display:		none;}
+
+#ajaxpopup {
+position:		absolute;
+z-index:		100;
+border:		solid 1px #000;
+background-color:	#ffc;
+font-size:		84%;
+padding:		0.15em;
+margin:		0px;}
+
+	/* aname.inc.php */
+
+a.anchor_super{
+font-size:		70%;
+vertical-align:		top;}
+
+a.anchor_super:hover{
+text-decoration:	none;}
+
+#content #edit-area h3 a.paraedit,
+#content #edit-area h4 a.paraedit,
+#content #edit-area h5 a.paraedit,
+#content #edit-area h6 a.paraedit{
+opacity:		0.7;
+font-size:		25px;
+letter-spacing:		20px;
+background:		transparent url(../img/paraedit.png) left top no-repeat;}
+
+#content #edit-area h4 a.paraedit,
+#content #edit-area h5 a.paraedit,
+#content #edit-area h6 a.paraedit{
+background:		transparent url(../img/paraedit_small.png) left top no-repeat;}
+
+#content #edit-area h3 a.paraedit:hover,
+#content #edit-area h4 a.paraedit:hover,
+#content #edit-area h5 a.paraedit:hover,
+#content #edit-area h6 a.paraedit:hover{
+opacity:		1.0;}
+
+#content #edit-area h3 a.paraedit span,
+#content #edit-area h4 a.paraedit span,
+#content #edit-area h5 a.paraedit span,
+#content #edit-area h6 a.paraedit span{
+visibility:		hidden;}
+
+	/* contents.inc.php */
+
+#edit-area #toc{
+width:				85%;
+font-size:			85%;
+border:				1px solid white;
+outline:			1px solid #ccc;
+background-color:	#f6f7fe;
+padding:			0px 10px 15px 30px;
+margin: 			25px 7.5% 45px 15px;}
+
+#edit-area #toc h2{
+color:				black;
+font-size:			110%;
+padding:			0px 0px 10px 0px;
+margin:				20px 0px  20px 10px;
+font-weight:		normal;}
+
+#edit-area div.hide_list{
+padding-bottom:		0px !important;}
+
+#edit-area div.show_list h2{
+border-bottom:		1px solid #999 !important;}
+
+#edit-area div.hide_list h2{
+padding:			0px !important;}
+
+#edit-area #toc h2 a{
+color:				black;}
+
+#edit-area #toc h2 a#showhide{
+color:				#205b00;
+font-size:			90%;}
+
+#edit-area #toc ul{
+padding:			0px;
+margin:				0px;
+list-style:			none none inside;}
+
+#edit-area #toc > ul {
+counter-reset:		toc;}
+
+#edit-area #toc > ul > li{
+margin:				0px;
+padding:			0px;
+counter-increment:	toc;}
+
+#edit-area #toc > ul li:hover{
+list-style:			none none inside;}
+
+#edit-area #toc > ul > li:before{
+content:			counters(toc, ".") "."; }
+
+#edit-area #toc > ul > li:hover::before{
+color:				red;}
+
+#edit-area #toc ul ul{
+padding-left:		30px;
+list-style-type:	none;
+background:			#f6f7fe url(../img/tree/28.png) 30px 0px repeat-y;}
+
+#edit-area #toc ul ul li{
+margin-left:		0px;
+padding-left:		30px;
+background:			transparent url(../img/tree/268.png) no-repeat;}
+
+#edit-area #toc ul ul li:last-child{
+margin-bottom:		0.5em;
+background:			#f6f7fe url(../img/tree/68.png) no-repeat;}
+
+	/* note.inc.php */
+
+#content #edit-area #note h3{
+padding-left:		3em;
+background:			white url(../img/note.png) 10px -40px no-repeat;}
+
+#content #edit-area #note h3::before{
+content:			"";}
+
+#content #edit-area #note ol{
+font-size:			90%;}
+
+#content #edit-area #note ol a.note_super{
+border:				1px solid #333;
+background-color:	#aaa;
+color:				white;
+padding:			0px 5px;
+font-family:		monospace;}
+
+#content #edit-area #note ol a.note_super:hover{
+background:			#325989;
+text-decoration:	none;}
+
+	/* comment.inc.php, pcomment.inc.php */
+
+#content #edit-area form + ul{
+font-size:			90%;}
+
+#content div#edit-area.display form input[type="text"][name="msg"],
+#content div#edit-area.display form textarea{
+color:				#bbb;
+font-size:			90%;
+padding:			2px;}
+
+#content div#edit-area form input[type="text"][name="msg"]:hover,
+#content div#edit-area form input[type="text"][name="msg"]:focus{
+color:			#555;
+padding:		2px 3px 4px 3px;
+margin-bottom:	1px;
+border:		1px solid #afa8a1;}
+
+#content div#edit-area hr{
+display:		none;}
+
+#content div#edit-area hr + h3{
+padding-left:		3em;
+background:		white url(../img/comments.png) 20px -20px no-repeat;}
+
+#content div#edit-area hr + h3::before{
+content:		"";}
+
+#content div#edit-area p span.pagename::before{
+content:		"Page: ";}
+
+#content div#edit-area p span.pagename{
+font-size:		90%;
+padding:		3px;
+background-color:	#eee;
+border:		1px solid #aaa;}
+
+/* codehighlight.inc.php */
+
+span.code_operator{	/* Operator */
+color:			blue;}
+span.code_identifier{	/* ID */
+color:			darkblue;}
+span.code_control{	/* Control construction */
+color:			navy;}
+span.code_function {	/* Standard fuction */	
+color:			blue;}
+
+span.code_constant{	/* Fixed Number */
+color:			teal;}
+
+span.code_pragma{	/* module, import, and pragma will be implemented in future */
+color:			#008080;}
+
+span.code_system{	/* __stdcall etc */
+color:			#5f0000;}
+span.code_environment{	/* Variables  */
+color:			#777777;}
+
+span.code_string{	/* Strings */
+color:			green;}
+
+span.code_comment{	/* Comment */
+color:			darkorange;}
+
+/* Individual hightlight */
+
+	/* for TeX */
+span.code_formula{
+color:			teal;}
+	/* for diff*/
+span.code_changed{
+color:			green;}
+span.code_added{
+color:			blue;}
+span.code_removed{
+color:			red;}
+	/* for make*/
+span.code_execute{
+color:			teal;}
+span.code_target{
+color:			darkblue;}
+span.code_src{
+color:			darkgreen;}
+	/* for PukiWiki */
+span.code_header{
+color:			blue;}
+span.code_table{
+color:			darkgreen;}
+span.code_list{
+color:			navy;}
+span.code_pre{
+color:			teal;}
+span.code_quote{
+color:			#777700;}
+
+/* Source-Code-view */
+
+/* A. Setting on non-column-layout */
+pre.code {
+background:		#EEFFFF;
+margin:		1em 2em 0.5em 1em;
+padding:		0.5em;
+border-top:		#DDDDEE 1px solid;
+border-right:		#888899 1px solid;
+border-bottom:	#888899 1px solid;
+border-left:		#DDDDEE 1px solid;
+line-height:		120%;}
+
+/* B. Setting on column-layout */
+table.code_table pre.code,
+div.code_table pre.code{
+background:		#EEFFFF;
+margin:		0px;
+padding:		0px;
+padding-left:		0.5em;
+border:		1px;
+line-height:		120%;}
+
+/* Display row-number */
+pre.code_number {
+margin:		0px;
+padding:		0px;
+padding-right:		0.5em;
+border:		1px;
+border-right:		1px solid #CCDDDD;
+line-height:		120%;
+min-width:		3ex;}
+
+/* Outline-view */
+pre.code_outline {
+margin:		0px;
+padding:		0px;
+border:		1px;
+border-right:		1px solid #F5FFFF;
+width:			10px;
+text-align:		center;
+background:		#E0F5F5;
+line-height:		120%;}
+
+/* Outline */
+div.code_table{
+color:			black;
+background-color:	#F0F8FF;
+border-top:		#DDDDEE 1px solid;
+border-right:		#888899 1px solid;
+border-bottom:	#888899 1px solid;
+border-left:		#DDDDEE 1px solid;
+margin:		1em 2em 0.5em 1em;
+white-space:		pre;}
+
+/* Make disable setting of column layout */
+table.code_table,
+table.code_table td,
+div.code_number pre,
+div.code_outline pre,
+div.code_src pre{
+margin:		0px;
+padding:		0px;
+border: 		none;}
+
+/* table-column-layout */
+td.code_src{
+width:			100%;}
+
+/* Difinition with <div> division */
+div.code_number,
+div.code_outline,
+div.code_src{
+position:		relative;
+margin:		0px;
+padding:		0px;
+left:			0px;
+float:			left;}
+
+/** Outline-menu setting **/
+
+/* Icon */ 
+div.code_menu{
+background-color:	#d4d0c8;}
+
+/* Image when close outline */
+img.code_dotimage{
+width:			20px;
+height:			8px;
+margin:		0px;
+padding:		0px;}
+
+/* Outline setteing */
+a.code_outline,
+a.code_outline:link,
+a.code_outline:visited,
+a.code_outline:hover,
+a.code_outline:active{
+background-color:	white;
+color:			black;
+border:		1px solid #888;
+text-decoration:	none;}
+
+/* extra attach table */
+
+table.attach_table{
+padding:		0px;
+border:		0px;
+margin:		auto;
+text-align:		left;
+color:			inherit;
+background-color:	#CCC;}
+
+th.attach_th{
+padding:		2px;
+margin:		1px;
+text-align:		center;
+color:			inherit;
+background-color:	#FFEECC;}
+
+td.attach_td1{
+background-color:	white;}
+
+td.attach_td2{
+background-color:	#CCFFCC;}
+
+/* search.inc.php */
+strong.word0{
+background-color:	#FFFF66;}
+strong.word1{
+background-color:	#A0FFFF;}
+strong.word2{
+background-color:	#99FF99;}
+strong.word3{
+background-color:	#FF9999;}
+strong.word4{
+background-color:	#FF66FF;}
+strong.word5{
+background-color:	#880000;
+color:			white;}
+strong.word6{
+background-color:	#00AA00;
+color:			white;}
+strong.word7{
+background-color:	#886800;
+color:			white;}
+strong.word8{
+background-color:	#004699;
+color:			white;}
+strong.word9{
+background-color:	#990099;
+color:			white;}
+
+/* amazon.inc.php */
+.amazon{
+padding:		0.5em 1.5em;
+text-align:		center}
+
+/* clear.inc.php */
+.clear{
+clear:			both;}
+
+/* diff.inc.php */
+
+.diff_added{
+color:			red;}
+
+.diff_removed{
+color:			blue;}
+
+pre .diff_added:before{
+content:		"+ ";}
+
+pre .diff_removed:before{
+content:		"- ";}
+
+/* ref.inc.php */
+div.img_margin{
+margin-left:		32px;
+margin-right:		32px;}
+
+/* new.inc.php */
+span.comment_date{
+font-size:		x-small;}
+
+span.new1{
+color:			red;
+font-size:		x-small;}
+
+span.new5{
+color:			green;
+font-size:		xx-small;}

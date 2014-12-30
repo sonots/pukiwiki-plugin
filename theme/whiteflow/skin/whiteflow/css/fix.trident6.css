@@ -1,0 +1,90 @@
+@charset "utf-8";
+
+/*  Stylesheet for geckodev.org
+
+	So this is for Windows IE...
+
+Creator: leva(http://www.geckodev.org/)
+License: X11 License */
+
+/* make appered of #content's background-image */
+
+pre{
+width:				600px;}
+
+div#container{
+margin-right:		4px;}
+
+div#container div#header h1{
+font-family:		sans-serif;
+width:				55%;}
+
+div#container div#header div#selection{
+width:				40%;
+margin-left:		200px;}
+
+div#container div#header div#search{
+border:				1px solid #ccc;
+padding-left:		15px;}
+
+div#container div#content div#edit-area{
+overflow:			hidden;}
+
+div#container div#content div#edit-area h3:first-letter{
+font-size:			250%;}
+
+div#container div#content div#edit-area h3 a{
+vertical-align:		baseline;}
+
+div#container div#content div#edit-area h3{
+padding:			0px;
+height:				auto;
+background:			transparent url(../img/wiki.png) 90% -12px no-repeat;}
+
+div#container div#content div#edit-area #toc h3{
+background-image:	none;}
+
+div#container div#menu{
+/* なぜかポップアップメニューは見えるという謎*/
+overflow-x:			hidden !important;}
+
+div#container div#footer{
+margin-top:			30px;
+height:				3em;}
+
+#content #additional #topic-path span.status{
+display:			none;}
+
+#content #edit-area #toc{
+border-color:		#ccc;}
+
+#content #edit-area div#search{
+border-color:		#cacaca;}
+
+/* Menu */
+
+div#sitemap ul li{ /* 相対URLだとダメポ */
+behavior:			url(../js/menu.htc);}
+
+div#sitemap ul{
+background-color:	#f8f8f8;}
+
+div#sitemap ul ul{
+background-color:	white;
+display:			none;
+border:				1px solid #afafaf;
+position:			absolute;
+top:				0px;
+right:				100%;}
+
+/* Menu End */
+
+#content .work textarea{
+line-break:			strict !important;
+word-break:			break-all !important; 
+word-wrap:			break-word !important;}
+
+table,
+table tr,
+table tbody{
+border:				none;}

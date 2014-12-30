@@ -1,0 +1,132 @@
+@charset "utf-8";
+
+/*  Stylesheet for geckodev.org
+
+Creator: leva(http://www.geckodev.org/)
+License: X11 License
+
+/* #header - includes h1,search form */
+
+#header h1{
+font-size:			220%;
+height:				80px;
+/* mysteriously, bordered on firefox */
+border:				none;
+float:				left;}
+
+#header h1 a{
+display:			block;
+height:				80px;
+padding:			20px 0px 0px 130px;
+background:			transparent url(../img/title.png) left top no-repeat;}
+
+#header #description{
+display:			none;}
+
+/* #header > #selection */
+
+#header #selection{
+margin:				15px 10px 0px 500px;
+text-align:			right;
+height:				80px;}
+
+#header div#search{
+font-size:			90%;
+padding-right:		20px;
+margin:				0px;
+white-space:		nowrap;
+background-color:	#f1f1f1;
+border:				1px solid white;
+outline:			1px solid #cacaca;}
+
+#header div#search form p{
+margin:			15px 0px 10px  0px;}
+
+#header div#search form #keyword{
+width:			73%;
+font-size:		90%;
+height:			auto;
+color:			#bbb;
+padding:		3px;
+margin:			0px 3px 0px 0px;}
+
+#header div#search form #keyword:hover,
+#header div#search form #keyword:focus{
+padding:		3px;
+color:			#555;}
+
+#header div#search form #go-search, .detail{
+font-size:		90%;
+padding:		2px;
+margin-left:		0.8em;
+vertical-align:		top;
+border:		1px solid #666;
+color:			white;
+background-color:	#888;}
+
+#header div#search form #go-search:hover,
+#header div#search form #go-search:focus,
+#header div#search form #go-search:active{
+background-color:	#666;}
+
+#header #search + br{
+display:		none;}
+
+#header div h3,
+#header div #popular select option .counter{
+display:		none !important;}
+
+/* #content > #additional - Additional infomation */
+
+#content #additional p#last-modified{
+width:			9em;
+font-size:		85%;
+padding:		10px 1em 10px 40px;
+white-space:		nowrap;
+float:			left;
+background:		transparent url(../img/update.png) 10px 40% no-repeat;}
+
+#content #additional p#last-modified span{
+display:		none;}
+
+#content #additional p#last-modified:hover span{
+position:		absolute;
+top:			8px;
+left:			60px;
+display:		block;
+font-size:		90%;
+-moz-border-radius:	4px;
+color:			black;
+background-color:	white;
+padding:		3px 7px;}
+
+#content #additional #topic-path p{
+padding:		7px 1em;
+border:			solid #dedede;
+border-width:		1px 0px;
+font-size:		95%;
+font-weight:		normal;
+text-align:		right;}
+
+#content #additional #topic-path h2{
+display:		none;}
+
+#content #additional #topic-path span.status{
+display:		block;
+position:		absolute;
+top:			6px;
+left:			45px;
+font-size:		90%;
+letter-spacing:		1px;
+padding:		3px;
+background-color:	#eee;
+color:			#444;
+border:			1px solid white;
+outline:		1px solid #ddd;}
+
+#content #additional #topic-path p a{
+color:			#555;
+text-decoration:	none;}
+
+#content #additional #topic-path p a:hover{
+font-weight:		bold;}

@@ -1,0 +1,32 @@
+#main-column {
+	margin-right: 128px;
+}
+
+#content {
+	border-right: 1px solid #aaa;
+	overflow: hidden;
+}
+
+/* IE6 */
+* html #content {
+	width: 100%;
+}
+
+#sidebar {
+	width: 120px;
+	float: right;
+	margin-top: 2.8em;
+	margin-left: -120px;
+	overflow: hidden;
+	position: relative;
+}
+
+/* IE6 + IE7 */
+* html #sidebar {
+	margin-top: 3.0em;
+}
+
+/* Opera8 */
+*+html > /**/body #sidebar {
+	margin-top: 2.8em;
+}

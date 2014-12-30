@@ -1,0 +1,17 @@
+@charset "utf-8";
+
+/*  Stylesheet for geckodev.org
+
+Creator: leva(http://www.geckodev.org/)
+License: X11 License */
+
+/* Framework overview */
+
+div#container div#content div#menu{
+display:		none !important;}
+
+div#container div#content div#edit-area.display{
+margin:			0px 15px 15px 15px;}
+
+div#container div#content div#edit-area.display div{
+margin:			0px;}

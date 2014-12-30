@@ -1,0 +1,27 @@
+Common subdirectories: plus.orig/plugin/.svn and plus.E_ALL.dev/plugin/.svn
+Common subdirectories: plus.orig/plugin/code and plus.E_ALL.dev/plugin/code
+diff -u plus.orig/plugin/edit.inc.php plus.E_ALL.dev/plugin/edit.inc.php
+--- plus.orig/plugin/edit.inc.php	2007-06-04 05:24:22.859375000 -0400
++++ plus.E_ALL.dev/plugin/edit.inc.php	2007-06-15 14:24:59.578125000 -0400
+@@ -280,7 +280,7 @@
+ 
+ 	page_write($page, $postdata, $notimestamp);
+ 	pkwk_headers_sent();
+-	if ($vars['refpage'] != '') {
++	if (isset($vars['refpage']) && $vars['refpage'] != '') {
+ 		if ($partid) {
+ 			header('Location: ' . get_script_uri() . '?' . rawurlencode($vars['refpage'])) . '#' . rawurlencode($partid);
+ 		} else {
+diff -u plus.orig/plugin/navibar.inc.php plus.E_ALL.dev/plugin/navibar.inc.php
+--- plus.orig/plugin/navibar.inc.php	2007-06-04 05:24:25.140625000 -0400
++++ plus.E_ALL.dev/plugin/navibar.inc.php	2007-06-15 14:18:10.734375000 -0400
+@@ -78,7 +78,7 @@
+ 					$body .= _navigator($name, 'Trackback(' . $tbcount . ')');
+ 				} else if ($is_read) {
+ 					$body .= 'no Trackback';
+-				} else if ($vars['cmd'] == 'list') {
++				} else if (isset($vars['cmd']) && $vars['cmd'] == 'list') {
+ 					$body .= _navigator($name, 'Trackback list');
+ 				}
+ 			}
+Common subdirectories: plus.orig/plugin/qrcode and plus.E_ALL.dev/plugin/qrcode

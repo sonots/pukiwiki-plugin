@@ -1,0 +1,68 @@
+/* pagetree.inc.php */
+
+div.pagetree {
+    margin-bottom: 1em;
+    white-space: nowrap;
+    *white-space: normal;  /* for IE */
+}
+
+div.pagetree a {
+    text-decoration: none;
+}
+
+div.pagetree ul li {
+    list-style-type: none;
+    background: none;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+div.pagetree ul {
+    padding: 0;
+    margin-left: 5px;
+    margin-bottom: 0px;
+}
+
+div.pagetree ul li {
+    line-height: 120%;
+    list-style-type: none;
+    background: none;
+    padding: 0;
+}
+
+div.pagetree img {
+    margin-top: .2em;
+    margin-right: 3px;
+    float: left;
+}
+
+*+html:first-child div.pagetree img {  /* for Opera */
+    margin-top: 0;
+    margin-right: 3px;
+    float: none;
+}
+
+div.pagetree span.collapsed {
+    color: #903;
+    font-size: 80%;
+    font-family: monospace;
+    font-weight: bold;
+}
+
+div.pagetree span.expanded {
+    color: #00f;
+    font-size: 80%;
+    font-family: monospace;
+    font-weight: bold;
+}
+
+div.pagetree span.leaf {
+    color: #99f;
+    font-size: 80%;
+    font-family: monospace;
+    font-weight: bold;
+}
+
+div.pagetree span.current {
+    background-color: #ffc;
+}

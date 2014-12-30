@@ -1,0 +1,30 @@
+diff -ru skin.orig/ajax/realedit.js skin.dev/ajax/realedit.js
+--- skin.orig/ajax/realedit.js	2007-06-14 08:37:12.625000000 -0400
++++ skin.dev/ajax/realedit.js	2007-06-14 08:33:19.093750000 -0400
+@@ -11,13 +11,7 @@
+ 		msg.rows = msg.rows * 2;
+ 	} else {
+ 		ajax_apx = true;
+-		if (navigator.userAgent.indexOf("Safari",0) != -1) {
+-			outer.style.display = "block";
+-		} else {
+-			outer.style.display = "inline";
+-		}
+-		outer.style.overflow = "scroll";
+-		outer.style.width = "660px";
++		outer.style.display = "block";
+ 		msg.rows = msg.rows / 2;
+ 	}
+ 	pukiwiki_apv(page,msg);
+diff -ru skin.orig/default.css skin.dev/default.css
+--- skin.orig/default.css	2007-06-14 08:37:14.156250000 -0400
++++ skin.dev/default.css	2007-06-14 08:32:43.468750000 -0400
+@@ -1834,7 +1834,7 @@
+ 	margin:1px;
+ 	padding:0px 20px;
+ 	height:200px;
+-	width:550px;
++	width:660px;
+ 	overflow:scroll;
+ 	display:none;
+ }

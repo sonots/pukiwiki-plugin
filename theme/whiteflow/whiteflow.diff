@@ -1,0 +1,175 @@
+Only in pukiwiki.whiteflow/backup: 4D656E75426172.gz
+diff -ur -x wiki -x cache pukiwiki-1.4.7_notb_utf8/default.ini.php pukiwiki.whiteflow/default.ini.php
+--- pukiwiki-1.4.7_notb_utf8/default.ini.php	2006-10-21 21:41:10.000000000 -0400
++++ pukiwiki.whiteflow/default.ini.php	2008-01-04 14:27:47.078125000 -0500
+@@ -14,7 +14,7 @@
+ if (defined('TDIARY_THEME')) {
+ 	define('SKIN_FILE', DATA_HOME . SKIN_DIR . 'tdiary.skin.php');
+ } else {
+-	define('SKIN_FILE', DATA_HOME . SKIN_DIR . 'pukiwiki.skin.php');
++	define('SKIN_FILE', DATA_HOME . SKIN_DIR . 'whiteflow/whiteflow.skin.php');
+ }
+ 
+ /////////////////////////////////////////////////
+Only in pukiwiki.whiteflow/diff: 486F67652F4D6F6765.txt
+Only in pukiwiki.whiteflow/diff: 4D656E75426172.txt
+Only in pukiwiki.whiteflow: ext
+diff -ur -x wiki -x cache pukiwiki-1.4.7_notb_utf8/lib/convert_html.php pukiwiki.whiteflow/lib/convert_html.php
+--- pukiwiki-1.4.7_notb_utf8/lib/convert_html.php	2008-01-04 13:15:48.656250000 -0500
++++ pukiwiki.whiteflow/lib/convert_html.php	2007-03-03 12:56:14.000000000 -0500
+@@ -242,6 +242,7 @@
+ 		list($text, $this->msg_top, $this->id) = $root->getAnchor($text, $this->level);
+ 		$this->insert(Factory_Inline($text));
+ 		$this->level++; // h2,h3,h4
++		$this->level++; // h3,h4,h5
+ 	}
+ 
+ 	function & insert(& $obj)
+@@ -953,10 +954,12 @@
+ 
+ 	function replace_contents($arr)
+ 	{
+-		$contents  = '<div class="contents">' . "\n" .
+-				'<a id="contents_' . $this->id . '"></a>' . "\n" .
+-				$this->contents->toString() . "\n" .
+-				'</div>' . "\n";
++		$contents  = '<div id="toc" class="show_list">' . "\n" .
++		$contents .= '<h2><a href="#toc" accesskey="i">目次</a>'.
++		'<span class="accesskey">(<kbd>I</kbd>)</span> '.
++		'[<a id="showhide" href="javascript:void(0);" onclick="showHide();">折り畳む</a>]</h2>'."\n";
++		$contents .= $this->contents->toString();
++		$contents .= "\n</div>\n";
+ 		return $contents;
+ 	}
+ }
+diff -ur -x wiki -x cache pukiwiki-1.4.7_notb_utf8/lib/html.php pukiwiki.whiteflow/lib/html.php
+--- pukiwiki-1.4.7_notb_utf8/lib/html.php	2008-01-04 13:16:18.796875000 -0500
++++ pukiwiki.whiteflow/lib/html.php	2008-01-04 13:45:46.000000000 -0500
+@@ -238,29 +238,104 @@
+ 	// 'margin-bottom', 'float:left', and 'margin-top'
+ 	// are for layout of 'cancel button'
+ 	$body = <<<EOD
++<div id="realview_outer"><div id="realview"></div></div>
++<form action="$script" method="post">
++<div id="tab_parent" class="edit_form show_list">
++<p>$template</p>
++<ol>
++<li id="l1"><a href="#l1" onclick="tab('e1');">編集画面</a></li>
++<li id="l2"><a href="#l2" onclick="tab('e2');">ファイルのアップロード</a></li>
++<li id="l3"><a href="#l3" onclick="tab('e3');">Pukiwikiクイック記法リスト</a></li>
++</ol>
++<br />
++<h3>編集画面</h3>
++<div id="e1" class="edit-mode">
+ <div class="edit_form">
+- <form action="$script" method="post" style="margin-bottom:0px;">
+-$template
+-  $addtag
+   <input type="hidden" name="cmd"    value="edit" />
+   <input type="hidden" name="page"   value="$s_page" />
+   <input type="hidden" name="digest" value="$s_digest" />
+-  <textarea name="msg" rows="$rows" cols="$cols">$s_postdata</textarea>
+-  <br />
+-  <div style="float:left;">
+-   <input type="submit" name="preview" value="$btn_preview" accesskey="p" />
+-   <input type="submit" name="write"   value="$_btn_update" accesskey="s" />
+-   $add_top
+-   $add_notimestamp
+-  </div>
+-  <textarea name="original" rows="1" cols="1" style="display:none">$s_original</textarea>
+- </form>
+- <form action="$script" method="post" style="margin-top:0px;">
+-  <input type="hidden" name="cmd"    value="edit" />
+-  <input type="hidden" name="page"   value="$s_page" />
+-  <input type="submit" name="cancel" value="$_btn_cancel" accesskey="c" />
+- </form>
++  <input type="hidden" name="ticket" value="$s_ticket" />
++  <input type="hidden" name="id"     value="$s_id" />
++  <textarea id="msg" name="msg" rows="$rows" cols="$cols">$s_postdata</textarea>
++<div class="options">
++<p>
++$add_assistant $add_notimestamp $add_top
++<input type="submit" name="preview" value="$btn_preview" accesskey="p" />
++<input type="submit" name="write"   value="$_btn_update" accesskey="s" />
++</p>
++</div>
++<textarea name="original" rows="1" cols="1" style="display:none">$s_original</textarea>
++</div>
++</div>
++
++<h3>添付ファイルのアップロード</h3>
++<div id="e2" class="edit-mode">
++<ul>
++<li><a href="$script?plugin=attach&amp;pcmd=upload&amp;page=$r_page" title="添付ファイルをアップロードします">このウィンドウ内から添付</a></li>
++<li><a href="javascript:void(0);" onclick="window.open('$script?plugin=attach&amp;pcmd=upload&amp;page=$r_page','attachment');" title="添付ファイルをアップロードします">別ウィンドウを開いて添付</a></li>
++</ul>
++<dl>
++<dt>アップロードしたファイルを表示する書式</dt>
++<dd><dl>
++<dt>編集中のページにファイルがある場合</dt>
++<dd>#ref(./<em>添付ファイル名</em>,nolink,<em>ファイルが表示されない時の説明</em>)</dd>
++<dt>別のページにファイルがある場合</dt>
++<dd>#ref(<span class="memo">ページ名</span>/<em>添付ファイル名</em>,nolink,<em>ファイルが表示されない時の説明</em>)</dd>
++</dl></dd>
++</dl>
++</div>
++
++<h3>Pukiwiki クイック記法リスト</h3>
++<div id="e3" class="edit-mode">
++<p>詳しく、全部見たい場合は、<a href="$script?%C0%B0%B7%C1%A5%EB%A1%BC%A5%EB">記法のページ</a>で確認して下さい</p>
++<dl>
++<dt>ページの目次</dt>
++<dd><strong>#contents</strong></dd>
++<dt>見出し</dt>
++<dd><ul>
++<li><strong>*</strong>見出し・レベル1</li>
++<li><strong>**</strong>見出し・レベル2</li>
++<li><strong>***</strong>見出し・レベル3</li>
++<li><strong>****</strong>見出し・レベル4</li>
++</ul></dd>
++<dt>リスト（順序無し）</dt>
++<dd><ul>
++<li><strong>-</strong>リスト・レベル1</li>
++<li><strong>--</strong>リスト・レベル2</li>
++<li><strong>---</strong>リスト・レベル3</li>
++</ul></dd>
++<dt>リスト（順序有り）</dt>
++<dd><ul>
++<li><strong>+</strong>リスト・レベル1</li>
++<li><strong>++</strong>リスト・レベル2</li>
++<li><strong>+++</strong>リスト・レベル3</li>
++</ul></dd>
++<dt>段落</dt>
++<dd><strong>~</strong>勇者は薬草を手に入れた</dd>
++<dt>定義と説明</dt>
++<dd><strong>:</strong>○○って何?<strong>|</strong>××のことだよ</dd>
++<dt>表組み</dt>
++<dd><strong>|</strong>ああこう<strong>|</strong>どうこう<strong>|</strong> とするか <strong>,</strong>ああこう<strong>,</strong>どうこう</dd>
++<dt>コード</dt>
++<dd>コードの初めを <strong>&lt;pre&gt;</strong> で、終わりを <strong>&lt;/pre&gt;</strong> でくくる</dd>
++<dt>URLリンク</dt><dd><strong>[[</strong>タイトル<strong>:</strong>リンク先のURL<strong>]]</strong></dd>
++<dt>サイト内リンク</dt>
++<dd><ul>
++<li><strong>[[</strong>ページの名前<strong>]]</strong></li>
++<li><strong>[[</strong>タイトル<strong>&gt;</strong>ページの名前<strong>]]</strong></li>
++</ul></dd>
++<dt>強調</dt>
++<dd><ul>
++<li><strong>'''</strong>強調<strong>'''</strong></li>
++<li><strong>''</strong>もっと強調<strong>''</strong></li>
++</ul></dd>
++<dt>注釈</dt>
++<dd><strong>((</strong>ただし、○○すること<strong>))</strong></dd>
++</dl>
++</div>
++	
+ </div>
++</form>
+ EOD;
+ 
+ 	if (isset($vars['help'])) {
+Only in pukiwiki.whiteflow/plugin: whiteflow_popular.inc.php
+Only in pukiwiki.whiteflow/plugin: whiteflow_recent.inc.php
+Only in pukiwiki.whiteflow/plugin: whiteflow_topicpath.inc.php
+Only in pukiwiki.whiteflow/skin: whiteflow
+Only in pukiwiki.whiteflow: whiteflow

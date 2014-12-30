@@ -1,0 +1,52 @@
+@charset "utf-8";
+
+/*  Stylesheet for geckodev.org
+
+	So this is for Windows IE...
+
+Creator: leva(http://www.geckodev.org/)
+License: X11 License */
+
+/* make appered of #content's background-image */
+
+div#container{
+margin-right:		4px;}
+
+div#container div#header h1{
+font-family:		sans-serif;
+width:				55%;}
+
+div#container div#header div#selection{
+width:				40%;
+margin-left:		200px;}
+
+div#container div#header div#search{
+border:				1px solid #ccc;
+padding-left:		15px;}
+
+div#container div#content div#edit-area h3:first-letter{
+font-size:			180%;}
+
+div#container div#content div#edit-area h3 a{
+vertical-align:		baseline;}
+
+div#container div#content div#edit-area h3{
+padding:			0px;
+height:				auto;
+background:			transparent url(../img/wiki.png) 90% -12px no-repeat;}
+
+div#container div#content div#edit-area #toc h3{
+background-image:	none;}
+
+#content #edit-area #toc{
+border-color:		#ccc;}
+
+#content .work textarea{
+line-break:			strict !important;
+word-break:			break-all !important; 
+word-wrap:			break-word !important;}
+
+table,
+table tr,
+table tbody{
+border:				none;}

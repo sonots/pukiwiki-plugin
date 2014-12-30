@@ -1,0 +1,187 @@
+@charset "utf-8";
+
+/*  Stylesheet for geckodev.org
+
+Creator: leva(http://www.geckodev.org/)
+License: X11 License */
+
+#content #menu{
+	font-size: 90%;}
+
+/* #content > #menu > #navigation - control of wiki */
+
+#content #menu h3{
+	font-size: 110%;
+	background: transparent url(../img/sitemenu.png) center left no-repeat;
+	padding-left: 30px;
+	margin: 15px 0px;}
+
+#content #menu ul + h3{
+	background-image: url(../img/recent.png);}
+
+#content #navigation h3{
+	background-image: url(../img/toolbox.png);
+	margin: 0px;}
+
+#content #navigation dl dt{
+	font-weight: normal;
+	margin-bottom: 3px;}
+
+#content #navigation dl dd{
+	display: none;}
+
+/* This shows description of navigation in #additional area
+#content #navigation dl dt:hover + dd{
+	display: block;
+	width: 21em;
+	background-color: white;
+	position:absolute;
+	top: -75px;
+	left: 23px;
+	white-space: nowrap;} */
+
+#content #menu dl dt a{
+	background: transparent none top left no-repeat;
+	padding-left: 30px;}
+
+#content #menu dl dt.cmd-newpage a{	background-image: url(../img/cpl/new.png);}
+#content #menu dl dt.cmd-source a{	background-image: url(../img/cpl/source.png);}
+#content #menu dl dt.cmd-edit a{		background-image: url(../img/cpl/edit.png);}
+#content #menu dl dt.cmd-diff a{		background-image: url(../img/cpl/diff.png);}
+#content #menu dl dt.cmd-backup a{	background-image: url(../img/cpl/backup.png);}
+#content #menu dl dt.cmd-upload a{		background-image: url(../img/cpl/upload.png);}
+#content #menu dl dt.cmd-help a{		background-image: url(../img/cpl/help.png);}
+#content #menu dl dt.cmd-freeze a{		background-image: url(../img/cpl/freeze.png);}
+#content #menu dl dt.cmd-unfreeze a{		background-image: url(../img/cpl/unfreeze.png);}
+
+/* #content > #menu > #sitemap - This list of wiki pages */
+
+#content #menu h4,
+#content #menu h5,
+#content #menu h6,
+#content #menu p,
+#content #menu hr,
+#content #menu pre,
+#content #menu table,
+#content #menu blockquote{
+	display:none;}
+
+#content #menu #page-menu{
+	padding-bottom: 15px;}
+
+
+
+
+
+
+
+div#sitemap ul,
+div#sitemap ul ul{
+width:				150px;
+color:				black;
+background-color:	white;
+padding:			0px;
+margin:				0px;
+cursor:				default;}
+
+div#sitemap > ul{
+background-color:	transparent;
+font-size:			90%;}
+
+div#sitemap ul li{
+color:				black;
+list-style-type:	none;
+padding:			8px;
+margin:				0px;
+position:			relative;}
+
+div#sitemap ul li > ul{
+display:			none;
+border:				1px solid #afafaf;
+position:			absolute;
+top:				0px;
+right:				100%;}
+
+div#sitemap ul li:hover,
+div#sitemap ul li.CSStoHighlight {
+background-color:	#5796e9;
+color:				#000;}
+
+div#sitemap ul ul.CSStoShow{
+display:			block;}
+
+div#sitemap ul li:hover > ul{
+display:			block;}
+
+div#sitemap ul li a{
+color:				#3c618e;
+display:			block;
+width:				100%;
+text-decoration:	none;}
+
+div#sitemap ul li a:hover,
+div#sitemap ul li a.CSStoHighLink{
+color:				white;}
+
+div#sitemap ul li:hover > a{
+color:				white;}
+
+/*
+
+#content #menu ul{
+	list-style: none none outside;
+	margin: 0px 0px 0px 15px;
+	font-size: 95%;
+	line-height: 160%;}
+
+#content #menu > #sitemap > ul > li > ul,
+#content #menu > #sitemap > ul > li > ul > li > ul{
+	display: none;}
+
+#content #menu > #sitemap > ul a{
+	display: block;
+	padding: 3px;
+	text-decoration: none;}
+
+#content #menu > #sitemap > ul:hover > li{
+	position:relative;}
+
+#content #menu > #sitemap > ul:hover > li > ul,
+#content #menu > #sitemap > ul > li > ul > li:hover > ul{
+	display: list-item;
+	position: absolute;
+	top: -11px;
+	right: 100%;
+	width: 250px;
+	border: 1px solid #aaa;
+	background-color: white;
+	padding: 10px 0px;
+	text-indent: 0.5em;
+	opacity: 0.95;}
+
+#content #menu > #sitemap > ul > li > ul > li:hover{
+	position:relative;}
+
+#content #menu > #sitemap > ul > li > ul > li:hover > ul{
+	top: -11px;
+	right: 100%;
+	margin-left: 0px;}
+
+#content #menu ul a[href="#header"]{
+	background: white url(../img/arrow2.png) 98% 50% no-repeat;}
+
+#content #menu ul li li:hover a[href="#header"]{
+	background: #5796e9 url(../img/arrow3.png) 98% 50% no-repeat;}
+
+#content #menu ul a:hover,
+#content #menu ul li:hover,
+#content #menu ul ul li:hover{
+	color: white;
+	background-color: #5796e9 !important;}
+
+#content #menu ul li:hover > a{
+	color: white;}
+
+*/
+
+

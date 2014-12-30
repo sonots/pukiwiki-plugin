@@ -1,0 +1,188 @@
+/* wikinote.inc.php
+------------------------------------------------------------------------------*/
+ul.wikinote {
+	float:left;
+	list-style-type:none;
+	list-style-position:outside;
+	padding:0;
+	margin:0;
+}
+ul.wikinote li {
+	float:left;
+	height:2.0em;
+	line-height:1.9em;
+	border:1px solid #353573;
+
+	margin:0px 0px 0px 7px;
+	text-align:center;
+}
+ul.wikinote li a,
+ul.wikinote li span.noexists {
+	display:block;
+	padding-left:7px;
+	padding-right:7px;
+	
+	background-color:#eee;
+	font-family:  Arial,"‚l‚r ‚oƒSƒVƒbƒN",sans-serif;
+	color:#000;
+	text-decoration:none;
+}
+ul.wikinote li.selected a,
+ul.wikinote li.selected span.noexists,
+ul.wikinote li a:hover {
+	overflow:visible;
+	position:relative;
+	z-index:2;
+
+	background-color:#fff;
+}
+ul.wikinote li span.noexists a {
+	padding:0px;
+	display:inline;
+	text-decoration:underline;
+}
+div#wrap_body {
+	position:relative;
+	z-index:1;
+	top:-.3em;
+	background:#fff;
+	border-top:1px solid #353573;
+	
+	margin-right:-15px;
+	margin-bottom:0px;
+	margin-left:-3px;
+	padding-top:.5em;
+        padding-right:15px;
+        padding-bottom:0px;
+        padding-left:1em;
+	border-left:1px solid #353573;
+	border-bottom:1px solid #353573;
+}
+
+@media print {
+	ul.wikinote {
+		display:none;
+	}
+	div#wrap_body {
+		border:none;
+	}
+}
+/* wikipedia */
+/*
+ul.wikinote{
+	float:right;
+	list-style-type:none;
+	padding:0;
+	margin:0;
+	line-height:2em;
+	overflow:visible;
+}
+ul.wikinote li{
+	display:inline;
+	border:1px solid #353573;
+	padding:0px 0px 1em 0px;
+}
+ul.wikinote li a {
+	margin:0;
+	color:#000;
+	text-decoration:none;
+	background:#eee;
+	padding:0px 10px 1em 10px;
+}
+ul.wikinote li.selected a,
+ul.wikinote li a:hover {
+	position:relative;
+	z-index:1;
+	line-height:2em;
+	color:#000;
+	background-color:#fff;
+}
+div#wrap_body {
+	position:relative;
+	background:#fff;
+	border-top:1px solid #353573;
+	border-right:1px solid #353573;
+	padding:.5em 15px 0px 20px;
+	margin:0px -15px 0px -20px;
+}*/
+
+/* reference: http://www6.plala.or.jp/go_west/nextcss/tip/tech/no_fix_tab.htm 
+   div#body { border-top } */
+/*
+ul.wikinote{
+	float:right;
+	list-style-type:none;
+	padding:0;
+	margin:0;
+	line-height:2em;
+	overflow:visible;
+}
+ul.wikinote li{
+	display:inline;
+}
+ul.wikinote li a {
+	color:#000;
+	border:1px solid #353573;
+	text-decoration:none;
+	background:#eee;
+	margin:0 5px;
+	padding:4px 10px 1em 10px;
+}
+ul.wikinote li.selected a,
+ul.wikinote li a:hover {
+	position:relative;
+	z-index:1;
+	line-height:2em;
+	color:#000;
+	border-bottom:none;
+	background-color:#fff;
+	padding-bottom:.48em;/*adjust*/
+}
+div#wrap_body {
+	position:relative;
+	background:#fff;
+	border-top:1px solid #353573;
+	border-right:1px solid #353573;
+	padding:.5em 15px 0px 20px;
+	margin:0px -15px 0px -20px;
+}*/
+
+/* reference: http://unraveled.com/projects/css_tabs/css_tabs.html
+   ul { border-bottom } */
+/*
+div#wrap_wikinote {
+	float:right;
+}
+
+ul.wikinote {
+	font: bold 11px verdana, arial, sans-serif;
+	list-style-type: none;
+	padding-bottom: 24px;
+	border-bottom: 1px solid #353573;
+	margin: 0px;
+}
+
+ul.wikinote li {
+	float: left;
+	height: 21px;
+	background-color: #ddf;
+	margin: 2px 2px 0 2px;
+	border: 1px solid #353573;
+}
+
+ul.wikinote li.selected a {
+	border-bottom: 1px solid #fff;
+	background-color: #fff;
+}
+
+ul.wikinote li a {
+	float: left;
+	display: block;
+	color: black;
+	text-decoration: none;
+	padding: 4px;
+}
+
+ul.wikinote li a:hover {
+	background: #fff;
+}*/

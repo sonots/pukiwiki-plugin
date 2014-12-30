@@ -1,0 +1,59 @@
+@charset "utf-8";
+
+/*  Stylesheet for geckodev.org
+
+Creator: leva(http://www.geckodev.org/)
+License: X11 License */
+
+/* Tabbed interface inspired by W3C */
+
+div.work #edit-area h3,
+div.work #edit-area #e2,
+div.work #edit-area #e3{
+	display: none;}
+
+#content #edit-area #tab_parent{
+	margin-top: 50px;}
+
+#edit-area #tab_parent ol{
+	display: block;
+	width: 576px;
+	height: 34px;
+	overflow: hidden;
+	padding: 0px;
+	margin: 0px 15px 0px 20px;
+	list-style-type: none;}
+
+#edit-area #tab_parent ol li{
+	float:left;
+	display: block;}
+
+#edit-area #tab_parent ol li a{
+	display: block;
+	width: 192px;
+	height: 34px;
+	white-space: nowrap;
+	overflow: hidden;
+	background: white url(../img/tab.png) no-repeat center center;
+	text-indent: -9999em;}
+
+#edit-area #tab_parent ol li#l1 a{
+	background-position: 0px 0px;}
+#edit-area #tab_parent ol li#l2 a{
+	background-position: -192px 0px;}
+#edit-area #tab_parent ol li#l3 a{
+	background-position: -384px 0px;}
+
+#edit-area #tab_parent ol li#l1:hover a,
+#edit-area #tab_parent ol li#l1:target a{
+	background-position: 0px -34px;}
+#edit-area #tab_parent ol li#l2:hover a,
+#edit-area #tab_parent ol li#l2:target a{
+	background-position: -192px -34px;}
+#edit-area #tab_parent ol li#l3:hover a,
+#edit-area #tab_parent ol li#l3:target a{
+	background-position: -384px -34px;}
+
+#edit-area #tab_parent ol + br{
+	clear: left;
+	display: none;}

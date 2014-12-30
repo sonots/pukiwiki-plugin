@@ -1,0 +1,129 @@
+@charset "utf-8";
+
+/*  Stylesheet for geckodev.org
+
+Creator: leva(http://www.geckodev.org/)
+License: X11 License */
+
+*{ /* Reset default css of all browsers*/
+	padding: 0px;
+	margin: 0px;}
+
+/* General elements */
+
+a:link{
+	color: #325989;
+	text-decoration: none;}
+
+p a{
+	margin: 0px 2px;}
+
+a:hover,
+a:visited:hover{
+	color: #a2b000;
+	text-decoration: underline;}
+
+a:visited{
+	color: #2f267d;
+	text-decoration: none;}
+
+img{
+	border: 0px;}
+
+legend, fieldset{
+	border: none;}
+
+span.accesskey{
+	font-size: 85%;
+	font-family: monospace;
+	margin: 0px 4px;
+	text-decoration: none;}
+
+span.accesskey kbd{
+	margin: 0px 2px;
+	text-decoration: underline;}
+
+ul,ol{
+	list-style-position: inside;
+	margin: 15px;}
+
+ul ul, ul ol,ol ul,ol ol{
+	margin: 5px 0px 5px 35px;}
+
+dl{
+	padding: 15px;}
+
+dl dt{
+	font-weight: bold;}
+
+dl dd{
+	margin: 10px 15px;
+	font-size: 90%;}
+
+input[type="checkbox"]{
+	margin-right: 10px;
+	vertical-align: middle;}
+
+input[type="radio"]{
+	margin-right: 10px;}
+
+q {
+	quotes: '「' '」' "『" "』";}
+
+q::before{
+	content: open-quote;}
+
+q::after{
+	content: close-quote;}
+
+table{
+	width: 100%;
+	margin: 25px 20px 25px 0px;
+	font-size: 90%;
+	border-collapse : collapse;}
+
+thead{
+	border: 1px solid #777;}
+
+thead th,
+tbody th,
+thead td{
+	vertical-align : middle;
+	font-weight: bold;
+	border-left: 1px solid white;
+	color: white;
+	background: #91afc7 url(../img/th.bg.png) bottom left repeat-x;
+	padding: 10px 0.5em;}
+
+tbody th{
+	text-align: left;
+	font-weight: bold;
+	border: 1px solid #333;
+	color: white;
+	background: #bbb;
+	padding: 10px 0.5em;}
+
+thead th a:link,
+tbody th a:link,
+thead td a:link{
+	color: white;}
+
+tbody td{
+	font-size: 90%;
+	border: 1px solid #777;
+	vertical-align : middle;
+	empty-cells : show;
+	padding: 10px 0.5em 10px 1em;}
+
+tbody td:hover{
+	background : #f3f3eb url(../img/td.bg.png) left top repeat-x;}
+
+pre{
+	color: #444;
+	background-color: #eee;
+	padding: 15px;
+	line-height: 170%;
+	border: 1px solid #ccc;
+	overflow: auto;
+	font-size: 85%;
+	font-family: "Courier New", Courier, monospace;}

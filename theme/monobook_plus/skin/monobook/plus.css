@@ -1,0 +1,171 @@
+@charset "UTF-8";
+
+/* PukiWiki Plus! */
+
+/* tooltip.inc.php */
+abbr, .tooltip {
+	border-style: none none dotted none;
+	border-width: medium medium 1px medium;
+	cursor: help
+}
+
+.linktip {
+}
+
+/* popup toc */
+#poptoc
+{
+	font-size:13px;
+	/*border:gray thin outset;*/
+	border-top: #ccc solid 1px;
+	border-right: black solid 1px;
+	border-bottom: black solid 1px;
+	border-left: #ccc solid 1px;
+	padding:0.5em;
+	background:white;
+	/*min-width:18em; max-width:25em;*/
+	/*width:22em;*/
+	margin-right:-130px;
+	z-index:1;
+	position:absolute;
+	display:none;
+}
+#poptoc a:hover
+{
+	background:#cce;
+}
+#poptoc a
+{
+	color:navy;
+}
+#poptoc ol
+{
+	/*list-style: none;*/
+	margin-left: 26px;
+}
+#poptoc h2
+{
+	color:navy;
+	background:#eee;
+	font-size:small;
+	font-weight:normal;
+	padding:4px;
+	margin:0;
+	text-align:center;
+	border:silver solid 1px;
+}
+#poptoc h2 a
+{
+	font-size:13px;
+	color:navy;
+	text-decoration:none;
+}
+#poptoc h2 img
+{
+	margin-bottom:-3px;
+	margin-right: 2px;
+}
+#poptoc .nav
+{
+	border-top:1px gray solid;
+	padding-top:0em;
+	margin-top:4px;
+	text-align:center;
+}
+#poptoc a.here
+{
+}
+
+/* navibar2.inc.php */
+div#navigator2 {
+	margin: 4px 0px;
+	padding: 0px 4px;
+	left: 0px;
+	width: 100%;
+	white-space: nowrap;
+}
+
+td.navimenu {
+	margin: 2px 5px 2px 5px;
+	font-size:13px;
+}
+td.navimenu a {
+	color: navy;
+	padding: 0px 4px;
+	font-weight: bold;
+	text-decoration: none;
+}
+td.navimenu a:active {
+	background-color:t#cce;
+	text-decoration:none;
+}
+td.navimenu a:visited {
+	color: navy;
+	text-decoration: none;
+}
+td.navimenu a:hover {
+	background-color:#cce;
+	text-decoration:none;
+}
+
+div.naviblock {
+	z-index:10;
+	padding:0px;
+        margin:0px;
+	border-right: gray 1px solid;
+	border-bottom: gray 1px solid;
+	border-left: gray 1px solid;
+	/*font-size:84%;*/
+	background-color: white;
+	visibility: hidden;
+	position: absolute;
+}
+div.naviblock div.MenuIte {
+	padding:0px;
+        margin:0px;
+}
+div.naviblock a {
+	font-weight:bold;
+	padding: 0px 8px;
+	color: #338;
+	text-decoration: none;
+	display:block;
+}
+div.naviblock a:active {
+	background-color:#cce;
+	text-decoration: none;
+}
+div.naviblock a:visited {
+	color: #338;
+	text-decoration: none;
+}
+div.naviblock a:hover {
+	background-color:#cce;
+	text-decoration: none;
+}
+
+/* for realedit.js */
+#realview_outer {
+	z-index:10;
+	margin:1px;
+	height:200px;
+	width:99%;
+	overflow:scroll;
+	display:none;
+}
+
+/* for ajaxpopup */
+#ajaxpopup {
+	position: absolute;
+	z-index: 100;
+	border: solid 1px #000;
+	background-color: #ffc;
+	font-size: 84%;
+	margin: 0px;
+	padding: 0.15em;
+}
+
+/* for blikifooter */
+div.blikiFooter {
+	text-align:right;
+}

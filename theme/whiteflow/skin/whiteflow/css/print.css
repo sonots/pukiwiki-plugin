@@ -1,0 +1,48 @@
+﻿@charset "utf-8";
+
+/*  Stylesheet for geckodev.org
+
+Creator: leva(http://www.geckodev.org/)
+License: X11 License */
+
+body{
+color:				black;
+background-color:	white;
+padding:			0px;}
+
+#wide-container,
+#container{
+padding:			0px;
+margin:				0px;}
+
+title{
+display:block;}
+
+
+.jumpmenu{
+display:			none;}
+
+#header #search,
+#header #description,
+#content #additional p#last-modified,
+#content #additional h2,
+#content #menu,
+#footer{
+display:			none;}
+
+#header h1{
+padding:			0px;
+margin:				0px;}
+
+#header h1 a,
+#content #additional #topic-path p a{
+color:				black;
+text-decoration:	none;}
+
+#content #additional #topic-path p{
+border:				solid black;
+border-width:		1px 0px;
+padding:			5px 0px;}
+
+#content #additional #topic-path p:before{
+content:			"\30da \30fc \30b8 \540d: ";}

@@ -1,0 +1,25 @@
+--- rewritemap.inc.php.orig	2007-12-22 05:52:49.859375000 -0500
++++ rewritemap.inc.php	2007-12-23 01:06:13.671875000 -0500
+@@ -51,6 +51,9 @@
+         return;
+     }
+ 
++    if (exist_plugin('statichtml')) {
++        $vars['page'] = PluginStatichtml::decode($vars['page']);
++    }
+     $page = plugin_rewritemap_get_pagename($vars['page']);
+ 
+     if (is_page($page)) {
+@@ -86,7 +89,11 @@
+ 
+     $alias = plugin_rewritemap_get_alias($page);
+     if (empty($alias)) {
+-        $alias = str_replace('%2F', '/', rawurlencode($page));
++        if (exist_plugin('statichtml')) {
++            $alias = PluginStatichtml::encode($page);
++        } else {
++            $alias = str_replace('%2F', '/', rawurlencode($page));
++        }
+     }
+     return $baseurl . $alias . PLUGIN_REWRITEMAP_POSTFIX;
+ }

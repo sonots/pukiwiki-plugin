@@ -1,0 +1,31 @@
+diff -u plus.orig/index.php plus.WWW_HOME/index.php
+--- plus.orig/index.php	2007-06-28 06:54:32.250000000 +0900
++++ plus.WWW_HOME/index.php	2007-07-07 02:03:15.312500000 +0900
+@@ -23,6 +23,7 @@
+ define('SITE_HOME',	'');
+ // define('DATA_HOME',     '../../wiki-data/contents/');
+ define('DATA_HOME',	'');
++define('WWW_HOME', '');
+ define('LIB_DIR',	SITE_HOME . 'lib/');
+ 
+ require(LIB_DIR . 'pukiwiki.php');
+diff -u plus.orig/pukiwiki.ini.php plus.WWW_HOME/pukiwiki.ini.php
+--- plus.orig/pukiwiki.ini.php	2007-06-28 06:54:32.250000000 +0900
++++ plus.WWW_HOME/pukiwiki.ini.php	2007-07-07 02:03:44.531250000 +0900
+@@ -139,14 +139,14 @@
+ // Directory settings II (ended with '/')
+ 
+ // Skins / Stylesheets
+-define('SKIN_DIR', 'skin/');
++define('SKIN_DIR', WWW_HOME . 'skin/');
+ // Skin files (SKIN_DIR/*.skin.php) are needed at
+ // ./DATAHOME/SKIN_DIR from index.php, but
+ // CSSs(*.css) and JavaScripts(*.js) are needed at
+ // ./SKIN_DIR from index.php.
+ 
+ // Static image files
+-define('IMAGE_DIR', 'image/');
++define('IMAGE_DIR', WWW_HOME . 'image/');
+ // Keep this directory shown via web browsers like
+ // ./IMAGE_DIR from index.php.
+ 

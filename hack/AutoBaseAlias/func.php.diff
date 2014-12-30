@@ -1,0 +1,57 @@
+--- lib.orig/func.php	2007-05-30 20:19:12.653262000 -0400
++++ lib/func.php	2007-05-31 23:48:24.046875000 -0400
+@@ -727,9 +727,39 @@
+ 	 return generate_trie_regex(& $pages, $start, $end, $pos);
+ }
+ 
+-// Load/get setting pairs from AutoAliasName
++// Load/get autoalias pairs
+ function get_autoaliases($word = '')
+ {
++	global $autobasealias;
++	static $pairs;
++	if (! isset($pairs)) {
++		$pairs = get_autoaliases_from_aliaspage();
++		if ($autobasealias) {
++			$pairs = array_merge($pairs, get_autoaliases_from_autobasealias());
++		}
++	}
++
++	// An array: All pairs
++	if ($word === '') return $pairs;
++
++	// A string: Seek the pair
++	return isset($pairs[$word]) ? $pairs[$word] : array();
++}
++
++// Load/get pairs of AutoBaseAlias
++function get_autoaliases_from_autobasealias()
++{
++	static $paris;
++	if (! isset($pairs)) {
++		$data = file_get_contents(CACHE_DIR . PKWK_AUTOBASEALIAS_CACHE);
++		$pairs = unserialize($data);
++	}
++	return $pairs;
++}
++
++// Load/get setting pairs from AutoAliasName
++function get_autoaliases_from_aliaspage()
++{
+ 	global $aliaspage, $autoalias_max_words;
+ 	static $pairs;
+ 
+@@ -762,12 +792,7 @@
+ 			$pairs[$name] = array_unique($pairs[$name]);
+ 		}
+ 	}
+-
+-	// An array: All pairs
+-	if ($word === '') return $pairs;
+-
+-	// A string: Seek the pair
+-	return isset($pairs[$word]) ? $pairs[$word] : array();
++	return $pairs;
+ }
+ 
+ // Load/get setting pairs from Glossary

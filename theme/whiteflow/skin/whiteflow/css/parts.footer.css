@@ -1,0 +1,36 @@
+@charset "utf-8";
+
+/*  Stylesheet for geckodev.org
+
+Creator: leva(http://www.geckodev.org/)
+License: X11 License
+
+/* #footer - includes license and so on */
+
+div#footer a{
+	color: white;}
+
+div#footer ul{
+	padding: 20px 20px 20px 45px;
+	margin: 0px;
+	font-size: 90%;
+	list-style: none none inside;
+	border-top: 4px double white;
+	background: transparent url(../img/shadow.bottom.png) left bottom repeat-x;}
+
+div#footer ul li.inquiry,
+div#footer ul li.request,
+div#footer ul li.help{
+	display: inline;}
+
+div#footer ul li.help + li{
+	margin-top: 5px;}
+
+div#footer ul li.help + li,
+div#footer ul li.help + li + li{
+	font-size: 90%;}
+
+div#footer ul li.inquiry::after,
+div#footer ul li.request::after{
+	content: "|";
+	margin: 0px 10px;}

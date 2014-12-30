@@ -1,0 +1,137 @@
+Common subdirectories: lib.orig/.svn and lib/.svn
+diff -u lib.orig/file.php lib/file.php
+--- lib.orig/file.php	2007-06-02 16:09:02.609375000 -0400
++++ lib/file.php	2007-06-04 23:35:36.859375000 -0400
+@@ -108,6 +108,17 @@
+ 		}
+ 	}
+ 
++	// Execute write_before plugins
++	$plugins = get_plugins_write_before();
++	foreach ($plugins as $plugin) {
++        list($name, $args) = $plugin;
++		do_plugin_write_before($name, $page, $postdata, $notimestamp, $oldpostdata, $args);
++    }
++
+ 	// Logging postdata
+ 	postdata_write();
+ 
+@@ -155,6 +166,17 @@
+ 	}
+ 
+ 	log_write('update',$page);
++
++	// Execute write_after plugins
++	$plugins = get_plugins_write_after();
++	foreach ($plugins as $plugin) {
++        list($name, $args) = $plugin;
++		do_plugin_write_after($name, $page, $postdata, $notimestamp, $oldpostdata, $args);
++	}
+ }
+ 
+ function get_link_list($diffdata)
+diff -u lib.orig/plugin.php lib/plugin.php
+--- lib.orig/plugin.php	2007-05-30 00:43:07.609375000 -0400
++++ lib/plugin.php	2007-06-04 23:22:22.390625000 -0400
+@@ -10,6 +10,8 @@
+ // Plugin related functions
+ 
+ define('PKWK_PLUGIN_CALL_TIME_LIMIT', 768);
++define('PKWK_PLUGIN_WRITE_BEFORE_LIST', 'plugins_write_before.txt');
++define('PKWK_PLUGIN_WRITE_AFTER_LIST',  'plugins_write_after.txt');
+ 
+ // Set global variables for plugins
+ function set_plugin_messages($messages)
+@@ -132,6 +134,57 @@
+ function exist_plugin_inline($name) {
+ 	return exist_plugin_function($name, 'plugin_' . $name . '_inline');
+ }
++// Check if plugin API 'write_before' exists
++function exist_plugin_write_before($name) {
++	return exist_plugin_function($name, 'plugin_' . $name . '_write_before');
++}
++// Check if plugin API 'write_after' exists
++function exist_plugin_write_after($name) {
++	return exist_plugin_function($name, 'plugin_' . $name . '_write_after');
++}
++
++// Get the list of 'write_before' plugins
++function get_plugins_write_before() {
++	static $plugins = null;
++	if (isset($plugins)) return $plugins;
++	$plugins = array();
++	foreach (array(EXT_PLUGIN_DIR, PLUGIN_DIR) as $p_dir) {
++		if (! is_readable($p_dir . PKWK_PLUGIN_WRITE_BEFORE_LIST)) continue;
++		$lines   = file($p_dir . PKWK_PLUGIN_WRITE_BEFORE_LIST);
++		$lines   = array_map('rtrim', $lines);
++		foreach ($lines as $line) {
++            $matches = array();
++            if (preg_match('/^([^\(]+)(?:\((.*)\))?/', $line, $matches) &&
++                exist_plugin_write_before($matches[1])) {
++                $name = $matches[1];
++                $args = isset($matches[2]) ? csv_explode(',', $matches[2]) : array();
++                $plugins[] = array($name, $args);
++            }
++		}
++	}
++	return $plugins;
++}
++// Get the list of 'write_after' plugins
++function get_plugins_write_after() {
++	static $plugins = null;
++	if (isset($plugins)) return $plugins;
++	$plugins = array();
++	foreach (array(EXT_PLUGIN_DIR, PLUGIN_DIR) as $p_dir) {
++		if (! is_readable($p_dir . PKWK_PLUGIN_WRITE_AFTER_LIST)) continue;
++		$lines   = file($p_dir . PKWK_PLUGIN_WRITE_AFTER_LIST);
++		$lines   = array_map('rtrim', $lines);
++		foreach ($lines as $line) {
++            $matches = array();
++            if (preg_match('/^([^\(]+)(?:\((.*)\))?/', $line, $matches) &&
++                exist_plugin_write_after($matches[1])) {
++                $name = $matches[1];
++                $args   = isset($matches[2]) ? csv_explode(',', $matches[2]) : array();
++                $plugins[] = array($name, $args);
++            }
++		}
++	}
++	return $plugins;
++}
+ 
+ // Do init the plugin
+ function do_plugin_init($name)
+@@ -260,6 +313,34 @@
+ 	}
+ }
+ 
++// Call API 'write_before' of the plugin
++function do_plugin_write_before($name, &$page, &$postdata, &$notimestamp, &$oldpostdata, &$optargs)
++{
++	if (! exist_plugin_write_before($name)) return;
++
++	if(do_plugin_init($name) === FALSE)
++		die_message('Plugin init failed: ' . $name);
++
++	textdomain($name); // gettext
++	call_user_func_array('plugin_' . $name . '_write_before', 
++						 array(&$page, &$postdata, &$notimestamp, &$oldpostdata, &$optargs));
++	textdomain(DOMAIN);
++}
++
++// Call API 'write_after' of the plugin
++function do_plugin_write_after($name, &$page, &$postdata, &$notimestamp, &$oldpostdata, &$optargs)
++{
++	if (! exist_plugin_write_after($name)) return;
++
++	if(do_plugin_init($name) === FALSE)
++		die_message('Plugin init failed: ' . $name);
++
++	textdomain($name); // gettext
++	call_user_func_array('plugin_' . $name . '_write_after', 
++						 array(&$page, &$postdata, &$notimestamp, &$oldpostdata, &$optargs));
++	textdomain(DOMAIN);
++}
++
+ // Used Plugin?
+ function use_plugin($plugin, $lines)
+ {

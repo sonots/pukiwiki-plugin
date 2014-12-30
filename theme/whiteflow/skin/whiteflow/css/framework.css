@@ -1,0 +1,74 @@
+@charset "utf-8";
+
+/*  Stylesheet for geckodev.org
+
+Creator: leva(http://www.geckodev.org/)
+License: X11 License */
+
+/* Framework overview */
+
+body{
+color:				#333;
+background-color:	#dfdfdf;
+padding:			20px 0px;}
+
+div#wide-container{
+overflow:			hidden;
+margin:				0px 20px;
+background:			white url(../img/shadow.right.png) right top repeat-y;}
+
+div#container{
+padding-left:		4px;
+min-width:			570px;
+border-top:			1px solid #d1d1d1;
+background:			transparent url(../img/shadow.left.png) left top repeat-y;}
+
+div#container div#header{
+padding:			0px 15px 0px 0px;
+height:				105px;
+overflow:			hidden;
+border-top:			1px solid #c3c3c3;}
+
+div#container div#content{
+padding:			0px 25px;
+margin:				0px;}
+
+div#container div#content div#additional{
+margin-bottom:		25px;}
+
+div#container div#content div#edit-area{
+line-height:		160%;}
+
+/* Dissapear background-image of #content when set #menu float property */
+div#container div#content div#edit-area.display{
+float:				left;
+width:				90%;
+padding:			0px;
+margin:				0px -200px 15px 15px;}
+
+div#container div#content div#edit-area.display div{
+margin-right:		220px;}
+
+div#container div#content div#edit-area.display div div{
+margin-right:		0px;}
+
+div#container div#content div#edit-area.work{
+margin-bottom:		30px;}
+
+div#container div#content div#menu{
+float:				left;
+width:				200px;
+background-color:	#f8f8f8;
+font-size:			85%;
+border:				solid #eee;
+border-width:		0px 1px;
+padding:			15px;}
+
+div.work div#content div#menu{
+display:			none;}
+
+div#container div#footer{
+clear: both;
+color:				white;
+background:			#aaa url(../img/shadow.right.png) right top repeat-y;
+padding:			0px 4px 0px 0px;}

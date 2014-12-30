@@ -1,0 +1,41 @@
+diff -u plus.orig/index.php plus.WWW_HOME/index.php
+--- plus.orig/index.php	2007-06-28 06:54:32.250000000 +0900
++++ plus.WWW_HOME/index.php	2007-07-09 00:57:38.218750000 +0900
+@@ -23,6 +23,7 @@
+ define('SITE_HOME',	'');
+ // define('DATA_HOME',     '../../wiki-data/contents/');
+ define('DATA_HOME',	'');
++define('WWW_HOME', '');
+ define('LIB_DIR',	SITE_HOME . 'lib/');
+ 
+ require(LIB_DIR . 'pukiwiki.php');
+diff -u plus.orig/pukiwiki.ini.php plus.WWW_HOME/pukiwiki.ini.php
+--- plus.orig/pukiwiki.ini.php	2007-06-28 06:54:32.250000000 +0900
++++ plus.WWW_HOME/pukiwiki.ini.php	2007-07-09 00:57:58.000000000 +0900
+@@ -139,21 +139,21 @@
+ // Directory settings II (ended with '/')
+ 
+ // Skins / Stylesheets
+-define('SKIN_DIR', 'skin/');
++define('SKIN_DIR', WWW_HOME . 'skin/');
+ // Skin files (SKIN_DIR/*.skin.php) are needed at
+ // ./DATAHOME/SKIN_DIR from index.php, but
+ // CSSs(*.css) and JavaScripts(*.js) are needed at
+ // ./SKIN_DIR from index.php.
+ 
+ // Static image files
+-define('IMAGE_DIR', 'image/');
++define('IMAGE_DIR', WWW_HOME . 'image/');
+ // Keep this directory shown via web browsers like
+ // ./IMAGE_DIR from index.php.
+ 
+ // for Fancy URL
+-define('ROOT_URI', '');
+-define('SKIN_URI', ROOT_URI . SKIN_DIR);
+-define('IMAGE_URI', ROOT_URI . IMAGE_DIR);
++define('ROOT_URI', WWW_HOME);
++define('SKIN_URI', ROOT_URI . 'skin/');
++define('IMAGE_URI', ROOT_URI . 'image/');
+ 
+ /////////////////////////////////////////////////
+ // Title of your Wikisite (Name this)

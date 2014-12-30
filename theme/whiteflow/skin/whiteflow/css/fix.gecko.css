@@ -1,0 +1,9 @@
+@charset "utf-8";
+
+/*  Stylesheet for geckodev.org
+
+Creator: leva(http://www.geckodev.org/)
+License: X11 License */
+
+#content .work textarea{
+	white-space:-moz-pre-wrap !important;}

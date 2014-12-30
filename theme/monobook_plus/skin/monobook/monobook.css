@@ -1,0 +1,1009 @@
+@import url("plus.css");
+/* -------------------- Initialization -------------------- */
+* {
+	margin: 0;
+	padding: 0;
+}
+
+body {
+	font: x-small sans-serif;
+	background: #f9f9f9 url(headbg.jpg) 0 0 no-repeat;
+	color: black;
+}
+
+/* IE6 + EUC */
+* html body {
+	font: xx-small Arial, sans-serif;
+}
+
+/* IE7 + EUC */
+*+html body {
+	font: x-small Arial, sans-serif;
+}
+
+/* Opera8 */
+*+html > /**/body {
+	font: x-small sans-serif;
+}
+
+/* -------------------- Layout -------------------- */
+#globalWrapper {
+	font-size: 127%;
+	width: 100%;
+}
+
+#menubar {
+	width: 11.6em;
+	float: left;
+	margin: 90px -11.6em 0 0;
+}
+
+#mainColumnWrapper {
+	width: 100%;
+	float: left;
+}
+
+#main-column {
+	margin-left: 12.2em;
+}
+
+#footer {
+	width: 100%;
+}
+
+/* -------------------- Text Module -------------------- */
+
+/*blockquote {
+	font-family: Times, "Times New Roman", serif;
+	font-style: italic;
+}*/
+
+blockquote {
+	margin-left:32px;
+}
+
+code {
+	background-color: #f9f9f9;
+}
+
+em {
+	font-style: italic;
+}
+
+h1, h2, h3, h4, h5, h6 {
+	color: #000;
+	background: none;
+	font-weight: normal;
+	margin: 0;
+	padding-top: .5em;
+	padding-bottom: .17em;
+	border-bottom: 1px solid #aaa;
+}
+h1 { font-size: 188%; }
+h2 { font-size: 150%; }
+h3, h4, h5, h6 {
+	border-bottom: none;
+	font-weight: bold;
+}
+h3 { font-size: 132%; }
+h4 { font-size: 116%; }
+h5 { font-size: 100%; }
+h6 { font-size: 80%;  }
+
+p {
+	margin: .4em 0 .5em;
+	line-height: 1.5em;
+}
+
+pre {
+	margin: 1em 0;
+	padding: 1em;
+	border: 1px dashed #2f6fab;
+	color: black;
+	background-color: #f9f9f9;
+	line-height: 1.1em;
+	overflow: auto;
+}
+
+/* IE6 */
+* html pre {
+	width: 100%;
+}
+
+/* -------------------- Hypertext Module -------------------- */
+
+a {
+	text-decoration: none;
+	color: #002bb8;
+	background: none no-repeat;
+}
+
+a:visited {
+	color: #5a3696;
+}
+
+a:active {
+	color: #faa700;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+a.external {
+	background: url(external.png) center right no-repeat;
+	padding-right: 13px;
+}
+
+a.note_super {
+	font-size: 80%;
+	line-height: 1em;
+	vertical-align: super;
+}
+
+/* -------------------- List Module -------------------- */
+
+dl {
+	margin-top: .2em;
+	margin-bottom: .5em;
+}
+
+dt {
+	font-weight: bold;
+	margin-bottom: .1em;
+}
+
+dd {
+	line-height: 1.5em;
+	margin-left: 2em;
+	margin-bottom: .1em;
+}
+
+ol {
+	line-height: 1.5em;
+	margin: .3em 0 0 3.2em;
+	padding: 0;
+	list-style-image: none;
+}
+
+ul {
+	line-height: 1.5em;
+	list-style-type: square;
+	margin: .3em 0 0 1.5em;
+	padding: 0;
+	list-style-image: url(bullet.gif);
+}
+
+li {
+	margin-bottom: .1em;
+}
+
+ol.list1 { list-style-type: decimal; }
+ol.list2 { list-style-type: lower-roman; }
+ol.list3 { list-style-type: lower-alpha; }
+
+/* -------------------- Text Extension Module -------------------- */
+
+hr {
+	height: 1px;
+	color: #aaa;
+	background-color: #aaa;
+	border: 0;
+	margin: .2em 0;
+}
+
+hr.note_hr {
+	margin: 1em 0 .5em;
+}
+
+/* -------------------- Forms Module -------------------- */
+
+form {
+	border: none;
+	margin: 0;
+}
+
+select {
+	vertical-align: top;
+}
+
+textarea {
+	padding: .1em;
+}
+
+.edit_form { clear: both; }
+
+.edit_form textarea {
+	width: 100%;
+}
+
+/* -------------------- Table Module -------------------- */
+
+thead td.style_td,
+tfoot td.style_td {
+	color: inherit;
+	background-color: #f2f2f2;
+}
+thead th.style_th,
+tfoot th.style_th {
+	color: inherit;
+	background-color: #d8dde8;
+}
+.style_table {
+	padding: 0px;
+	border: 0px;
+	margin: auto;
+	text-align: left;
+	font-size: 100%;
+	color: inherit;
+	background-color: #aaa;
+}
+.style_th {
+	padding: 5px;
+	margin: 1px;
+	text-align: center;
+	color: inherit;
+	background-color: #eee;
+}
+.style_td {
+	padding: 5px;
+	margin: 1px;
+	color: inherit;
+	background-color: #f9f9f9;
+}
+
+div.ie5 { text-align: center; }
+
+/* -------------------- Image Module -------------------- */
+
+img {
+	border: none;
+	vertical-align: middle;
+}
+
+p img {
+	margin: 0;
+}
+
+/* -------------------- Main Content Area -------------------- */
+#main-column {
+	line-height: 1.5em;
+}
+
+#content {
+	background: #fff;
+	font-size: 118%;
+	border: 1px solid #aaa;
+	border-right: none;
+	padding: 0 .85em .75em;
+	position: relative;
+	z-index: 1;
+}
+
+/* IE6 */
+* html body #content {
+	height: 1%;
+}
+
+/* IE7 */
+*+html body #content {
+	height: 1%;
+}
+
+/* Opera8 */
+*+html > /**/body #content {
+	height: auto;
+}
+
+.jumpmenu {
+	display: none;
+}
+
+#content h1, #content h2 {
+	margin-bottom: .6em;
+}
+
+#content h3, #content h4, #content h5 {
+	margin-bottom: .3em;
+}
+
+#content h1.firstHeading {
+	margin-bottom: .1em;
+	line-height: 1.2em;
+	font-size: 159.5%; /* */
+	padding-top: .52em; /* */
+	margin-bottom: .1em;
+}
+
+#contentSub {
+	font-size: 84%;
+	line-height: 1.2em;
+	margin: 0 0 1.4em 1em;
+	color: #7d7d7d;
+	width: auto;
+}
+
+span.noexists {
+	color: #c20;
+}
+
+.small {
+	font-size: 80%;
+}
+
+span.size1 {
+	font-size: xx-small;
+	line-height: 130%;
+	text-indent: 0px;
+	display: inline;
+}
+span.size2 {
+	font-size: x-small;
+	line-height: 130%;
+	text-indent: 0px;
+	display: inline;
+}
+span.size3 {
+	font-size: small;
+	line-height: 130%;
+	text-indent: 0px;
+	display: inline;
+}
+span.size4 {
+	font-size: medium;
+	line-height: 130%;
+	text-indent: 0px;
+	display: inline;
+}
+span.size5 {
+	font-size: large;
+	line-height: 130%;
+	text-indent: 0px;
+	display: inline;
+}
+span.size6 {
+	font-size: x-large;
+	line-height: 130%;
+	text-indent: 0px;
+	display: inline;
+}
+span.size7 {
+	font-size: xx-large;
+	line-height: 130%;
+	text-indent: 0px;
+	display: inline;
+}
+
+strong.word0 {
+	background-color: #FFFF66;
+	color: black;
+}
+strong.word1 {
+	background-color: #A0FFFF;
+	color: black;
+}
+strong.word2 {
+	background-color: #99FF99;
+	color: black;
+}
+strong.word3 {
+	background-color: #FF9999;
+	color: black;
+}
+strong.word4 {
+	background-color: #FF66FF;
+	color: black;
+}
+strong.word5 {
+	background-color: #880000;
+	color: white;
+}
+strong.word6 {
+	background-color: #00AA00;
+	color:white;
+}
+strong.word7 {
+	background-color: #886800;
+	color: white;
+}
+strong.word8 {
+	background-color: #004699;
+	color: white;
+}
+strong.word9 {
+	background-color: #990099;
+	color: white;
+}
+
+#note {}
+
+#preview {}
+
+/* -------------------- Logo -------------------- */
+
+#logo a {
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: 3;
+	display: block;
+	height: 90px;
+	width: 12.2em;
+	background-position: 45% 50%;
+	background-repeat: no-repeat;
+	text-decoration: none;
+	overflow: visible;
+}
+
+/* -------------------- Navigation Tab -------------------- */
+
+#navigator {
+	font-size: 95%;
+	margin-top: 1.8em;
+}
+
+#navigator ul {
+	margin-left: 1.1em;
+	font-size: 95%;
+	list-style: none;
+	line-height: 1.2em;
+	white-space: nowrap;
+}
+
+/* IE6 */
+* html #navigator ul {
+	margin-bottom: .2em;
+}
+
+/* IE7 + Opera8 */
+*+html #navigator ul {
+	margin-bottom: .2em;
+}
+
+#navigator ul li {
+	display: inline;
+	margin: 0 .6em 0 0;
+	border: 1px solid #aaa;
+	border-bottom: none;
+	background-color: #fff;
+	padding: .2em 0 .3em;
+}
+
+#navigator ul li a {
+	color: #002bb8;
+	background-color: #fff;
+	padding: .1em .8em .4em;
+	text-decoration: none;
+	text-transform: lowercase;
+	position: relative;
+	z-index: 0;
+}
+
+#navigator ul li.noexists a {
+	color: #c20;
+}
+
+/* IE6 */
+* html #navigator ul li a {
+	padding-top: 0;
+}
+
+#navigator ul li.selected {
+	border-color: #fabd23;
+	font-weight: bold;
+}
+
+#navigator ul li.selected a {
+	padding: .1em 1em .4em;
+	z-index: 2;
+}
+
+/* IE6 */
+* html #navigator ul li.selected a {
+	padding-top: 0;
+}
+
+#navigator ul li a:hover {
+	border-bottom: 0 solid;
+	z-index: 2;
+}
+
+#navigator ul li#wn_note,
+#navigator ul li#separate {
+	margin-right: 1.9em;
+}
+
+#navigator ul.specialbg li,
+#navigator ul.specialbg li a,
+#main-column div.specialbg {
+	background-color: #fbfcff;
+}
+
+/* -------------------- MenuBar -------------------- */
+
+#menubar {
+	/*word-break: break-all;*/
+	overflow: hidden;
+	position: relative;
+}
+
+#menubar div.menubox,
+#menubar div.monobook_recent,
+#menubar div.toolbox {
+	font-size: 95%;
+	background-color: #fff;
+	border: 1px solid #aaa;
+	padding: 0 0 .3em .5em;
+	margin-bottom: .5em;
+}
+
+#menubar ul {
+	font-size: 95%;
+	line-height: 1.5em;
+}
+
+#menubar li {
+	margin: 0;
+}
+
+/*#menubar div.menubox a {
+	display: block;
+}*/
+
+#menubar h2,
+#menubar h3,
+#menubar h4,
+#menubar h5 {
+	display: inline;
+	font-size: 91%;
+	font-weight: normal;
+	height: 1em;
+	padding: 0 1em 0 .5em;
+	border: none;
+	text-transform: lowercase;
+	white-space: nowrap;
+}
+
+/* -------------------- Footer -------------------- */
+
+#footer {
+	margin-bottom: 1em;
+	background-color: #fff;
+	padding: .3em 0 1.5em;
+	border-top: 1px solid #fabd23;
+	border-bottom: 1px solid #fabd23;
+	text-align: center;
+	font-size: 90%;
+}
+
+#footer #f-officialico {
+	float: left;
+	width: 104px;
+}
+
+#footer #f-officialdevico {
+	float: right;
+	width: 104px;
+}
+
+#footer img {
+	border: none;
+}
+
+#footer li {
+	display: inline;
+	margin: 0 1.3em;
+	white-space: nowrap;
+}
+
+/* IE6 */
+* html body #footer li {
+	white-space: normal;
+}
+
+/* IE7 */
+*+html body #footer li {
+	white-space: normal;
+}
+
+/* Opera8 */
+*+html > /**/body #footer li {
+	white-space: nowrap;
+}
+
+/* -------------------- personal -------------------- */
+
+#personal {
+	font-size: 95%;
+	width: 100%;
+	white-space: nowrap;
+	overflow: visible;
+	line-height: 1.2em;
+	position: absolute;
+	top: 0;
+	right: 0;
+}
+
+#personal ul {
+	font-size: 95%;
+	line-height: 1em;
+	color: #2f6fab;
+	margin: 0;
+	padding: 0 2em 0 3em;
+	list-style-type: none;
+	list-style-image: none;
+	text-align: right;
+}
+
+#personal li {
+	display: inline;
+	margin-left: 1em;
+	line-height: 1.2em;
+}
+
+#personal li#login,
+#personal li#userpage {
+	padding-left: 20px;
+	background: transparent url(user.gif) left top no-repeat;
+}
+
+#personal li.active {
+	font-weight: bold;
+}
+
+#personal a {
+	color: #005896;
+	text-decoration: none;
+	padding-bottom: .2em;
+}
+
+#personal a:hover {
+	background-color: #fff;
+}
+
+#personal a.new {
+	color: #A55858;
+}
+
+#personal li.active a:hover {
+	background-color: transparent;
+}
+
+/* -------------------- Plugin -------------------- */
+
+/* calendar*.inc.php */
+.style_calendar {
+	padding: 0;
+	margin: 0;
+	background-color: #fff;
+	text-align: center;
+	border-collapse: collapse;
+}
+
+.style_calendar td {
+	border: 2px solid #aaa;
+	font-size: .85em;
+	padding: .35em;
+}
+
+.style_td_week {
+	background-color: #eee;
+}
+
+.style_td_today {
+	background-color: #cfc;
+}
+
+.style_calendar a.small {
+	font-size: 1em;
+}
+
+/* calendar_viewer.inc.php */
+div.calendar_viewer {
+	color: inherit;
+	background-color: inherit;
+	margin-top: 20px;
+	margin-bottom: 10px;
+	padding-bottom: 10px;
+}
+span.calendar_viewer_left {
+	color: inherit;
+	background-color: inherit;
+	float: left;
+}
+span.calendar_viewer_right {
+	color: inherit;
+	background-color: inherit;
+	float: right;
+}
+
+/* clear.inc.php */
+.clear {
+	margin: 0px;
+	clear: both;
+}
+
+/* counter.inc.php */
+div.counter { font-size: 95%; }
+
+/* contentsx.inc.php */
+table.toc {
+	border: 1px solid #aaa;
+	background-color: #f9f9f9;
+	font-size: 95%;
+	padding: 5px 5px 5px 0;
+	margin-bottom: .6em; /* */
+}
+
+table.toc td.toctitle {
+	text-align: center;
+	font-weight: bold;
+	padding: .1em 0 .1em 5px;
+}
+
+table.toc ul.contentsx {
+	margin: 0 0 0 1.2em;
+}
+
+table.toc ul {
+	margin: 0 0 0 2em;
+}
+
+/* diff.inc.php */
+span.diff_added {
+	color: blue;
+	background-color: inherit;
+}
+span.diff_removed {
+	color: red;
+	background-color: inherit;
+}
+
+/* include.inc.php */
+h5.side_label {}
+
+/* monobook_recent.inc.php */
+#menubar div.monobook_recent {
+	padding-top: .3em;
+}
+
+#menubar div.monobook_recent strong {
+	font-size: 95%;
+}
+
+#menubar div.monobook_recent ul {
+	margin-top: 0;
+}
+
+/* monobook_search.inc.php */
+#menubar div.monobook_search {
+	background-color: #fff;
+	border: 1px solid #aaa;
+	padding: .5em .4em .4em;
+	text-align: center;
+	font-size: 95%;
+	margin-bottom: .5em;
+}
+
+.monobook_search input.searchInput {
+	font-size: 95%;
+	width: 10.9em;
+	padding: 1px 0;
+}
+
+.monobook_search input.searchButton {
+	font-size: 95%;
+	/*font-weight: bold;*/
+	margin-top: 1px;
+	padding: 0 .5em;
+}
+
+/* monobook_toolbox.inc.php */
+#menubar div.toolbox a {
+	display: block;
+}
+
+#menubar div.toolbox hr {
+	margin-right: .5em;
+}
+
+/* navi.inc.php */
+ul.navi {
+	margin: 0;
+	padding: 0;
+	text-align: center;
+}
+
+ul.navi li {
+	display: inline;
+}
+
+li.navi_none {
+	float: none;
+	text-align: center;
+}
+
+li.navi_left {
+	float: left;
+	text-align: left;
+}
+
+li.navi_right {
+	float: right;
+	text-align: right;
+}
+
+/* new.inc.php */
+/*span.comment_date { font-size: x-small; }*/
+span.new1 {
+	color: red;
+	background-color: transparent;
+	font-size: x-small;
+}
+span.new5 {
+	color: green;
+	background-color: transparent;
+	font-size: xx-small;
+}
+
+/* aname.inc.php */
+.anchor_super {
+	font-size: .1%;
+	line-height: 1px;
+}
+
+/* Opera8 for jump to anchor */
+*+html > /**/body .anchor_super {
+	vertical-align: super;
+}
+
+/* paraedit ($fixed_heading_edited) */
+a.anchor_super img {
+/*	position: absolute;
+	right: .85em;*/
+}
+
+h1 .anchor_super { font-size: 53%; }
+h2 .anchor_super { font-size: 67%; }
+h3 .anchor_super { font-size: 76%; font-weight: normal; }
+h4 .anchor_super { font-size: 86%; font-weight: normal; }
+h5 .anchor_super { font-weight: normal; }
+h6 .anchor_super { font-size: 125%; font-weight: normal; }
+
+/* popular.inc.php */
+span.counter {}
+
+/* ref.inc.php */
+div.img_margin {
+	margin-left: 1.4em;
+	margin-right: 1.4em;
+}
+
+/* tag.inc.php */
+span.tag {
+	display: block;
+	margin-top: 1em;
+	border: 1px solid #aaa;
+	background-color: #f9f9f9;
+	padding: .8em 5px;
+	width: auto;
+}
+
+/* IE6 */
+* html body span.tag {
+	width: 100%;
+}
+
+span.tag a {
+	padding-right: .4em;
+	border-right: 1px solid #000;
+}
+
+.htmltagcloud {
+	font-size: 12px;
+	line-height: 340%;
+}
+
+.tagcloud0  { font-size: 100%;}
+.tagcloud1  { font-size: 110%;}
+.tagcloud2  { font-size: 120%;}
+.tagcloud3  { font-size: 130%;}
+.tagcloud4  { font-size: 140%;}
+.tagcloud5  { font-size: 150%;}
+.tagcloud6  { font-size: 160%;}
+.tagcloud7  { font-size: 170%;}
+.tagcloud8  { font-size: 180%;}
+.tagcloud9  { font-size: 190%;}
+.tagcloud10 { font-size: 200%;}
+.tagcloud11 { font-size: 210%;}
+.tagcloud12 { font-size: 220%;}
+.tagcloud13 { font-size: 230%;}
+.tagcloud14 { font-size: 240%;}
+.tagcloud15 { font-size: 250%;}
+.tagcloud16 { font-size: 260%;}
+.tagcloud17 { font-size: 270%;}
+.tagcloud18 { font-size: 280%;}
+.tagcloud19 { font-size: 290%;}
+.tagcloud20 { font-size: 300%;}
+.tagcloud21 { font-size: 310%;}
+.tagcloud22 { font-size: 320%;}
+.tagcloud23 { font-size: 330%;}
+.tagcloud24 { font-size: 340%;}
+
+#menubar .htmltagcloud { 
+	font-size: 10px;
+	line-height: 2em;
+	background-color: #fff;
+	border: 1px solid #aaa;
+}
+
+#menubar .htmltagcloud span a {
+	margin: 0 2px;
+	padding-bottom: 1em;
+}
+
+#menubar .tagcloud0  { font-size: 100%;}
+#menubar .tagcloud1  { font-size: 105%;}
+#menubar .tagcloud2  { font-size: 110%;}
+#menubar .tagcloud3  { font-size: 115%;}
+#menubar .tagcloud4  { font-size: 120%;}
+#menubar .tagcloud5  { font-size: 125%;}
+#menubar .tagcloud6  { font-size: 130%;}
+#menubar .tagcloud7  { font-size: 135%;}
+#menubar .tagcloud8  { font-size: 140%;}
+#menubar .tagcloud9  { font-size: 145%;}
+#menubar .tagcloud10 { font-size: 150%;}
+#menubar .tagcloud11 { font-size: 155%;}
+#menubar .tagcloud12 { font-size: 160%;}
+#menubar .tagcloud13 { font-size: 165%;}
+#menubar .tagcloud14 { font-size: 170%;}
+#menubar .tagcloud15 { font-size: 175%;}
+#menubar .tagcloud16 { font-size: 180%;}
+#menubar .tagcloud17 { font-size: 185%;}
+#menubar .tagcloud18 { font-size: 190%;}
+#menubar .tagcloud19 { font-size: 195%;}
+#menubar .tagcloud20 { font-size: 200%;}
+#menubar .tagcloud21 { font-size: 205%;}
+#menubar .tagcloud22 { font-size: 210%;}
+#menubar .tagcloud23 { font-size: 215%;}
+#menubar .tagcloud24 { font-size: 220%;}
+
+.tagcloud0,
+.tagcloud1,
+.tagcloud2,
+.tagcloud3,
+.tagcloud4,
+.tagcloud5,
+.tagcloud6,
+.tagcloud7,
+.tagcloud8,
+.tagcloud9,
+.tagcloud10,
+.tagcloud11,
+.tagcloud12,
+.tagcloud13,
+.tagcloud14,
+.tagcloud15,
+.tagcloud16,
+.tagcloud17,
+.tagcloud18,
+.tagcloud19,
+.tagcloud20,
+.tagcloud21,
+.tagcloud22,
+.tagcloud23,
+.tagcloud24 { line-height: 1.2em;}
+
+/* vote.inc.php */
+td.vote_label {
+	color:inherit;
+	background-color:#d8dde8;
+}
+td.vote_td1 {
+	color:inherit;
+	background-color:#f9f9f9;
+}
+td.vote_td2 {
+	color:inherit;
+	background-color:#f2f2f2;
+}

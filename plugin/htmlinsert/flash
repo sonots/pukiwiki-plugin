@@ -1,0 +1,17 @@
+<div class="flash" style="${style=}">
+<object data="${swf=}" width="${width=}" height="${height=}" id="${name=}" type="application/x-shockwave-flash">
+<param name="movie" value="${swf=}" />
+<param name="FlashVars" value="${enc:flashvars=}" />
+<param name="quality" value="${quality=high}" />
+<param name="bgcolor" value="${bgcolor=}" />
+<param name="loop" value="${loop=true}" />
+<param name="play" value="${play=true}" />
+<param name="scale" value="${scale=showall}" />
+<param name="salign" value="${salign=}" />
+<param name="base" value="${base=}" />
+<param name="menu" value="${menu=}" />
+<param name="wmode" value="${wmode=window}" />
+<param name="allowScriptAccess" value="${allowScriptAccess=sameDomain}" />
+${alternate=<p>Your browser is not supporting object tag. Please use one of the latest browsers.</p>}
+</object>
+</div>

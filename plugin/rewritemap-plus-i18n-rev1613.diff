@@ -1,0 +1,1411 @@
+Only in plus.rewritemap/cache: ticket.dat
+diff -ur -x .svn plus.orig/lib/file.php plus.rewritemap/lib/file.php
+--- plus.orig/lib/file.php	2007-12-19 19:55:38.234375000 -0500
++++ plus.rewritemap/lib/file.php	2007-12-22 07:35:48.796875000 -0500
+@@ -442,7 +442,7 @@
+ 			if ($notify_diff_only) $str = preg_replace('/^[^-+].*\n/m', '', $str);
+ 			$summary['ACTION'] = 'Page update';
+ 			$summary['PAGE']   = & $page;
+-			$summary['URI']    = get_script_uri() . '?' . rawurlencode($page);
++			$summary['URI']    = get_page_uri($page);
+ 			$summary['USER_AGENT']  = TRUE;
+ 			$summary['REMOTE_ADDR'] = TRUE;
+ 			pkwk_mail_notify($notify_subject, $str, $summary);
+diff -ur -x .svn plus.orig/lib/func.php plus.rewritemap/lib/func.php
+--- plus.orig/lib/func.php	2007-12-19 19:55:38.250000000 -0500
++++ plus.rewritemap/lib/func.php	2007-12-22 07:35:48.968750000 -0500
+@@ -306,7 +306,7 @@
+ 		$s_page  = htmlspecialchars($page);
+ 		$passage = $show_passage ? ' ' . get_passage(get_filetime($page)) : '';
+ 		if ($search_word_color) {
+-			$uri = $script . '?' . 'cmd=read&amp;page=' . $r_page . '&amp;word=' . $r_word;
++			$uri = get_page_uri($page, 'word=' . $r_word);
+ 			if ($ajax && UA_PROFILE == 'default') {
+ 				$pre = $script . '?' . 'cmd=preview&amp;page=' . $r_page . '&amp;word=' . $r_word;
+ 				$pre = ' onmouseover="showGlossaryPopup(' . "'" . $pre . "'" . ',event,0.2);" onmouseout="hideGlossaryPopup();"';
+@@ -314,7 +314,7 @@
+ 				$pre = '';
+ 			}
+ 		} else {
+-			$uri = $script . '?' . $r_page;
++			$uri = get_page_uri($page);
+ 			$pre = '';
+ 		}
+ 		$retval .= ' <li><a href="' . $uri . '"' . $pre . '>' . $s_page . '</a>' . $passage . '</li>' . "\n";
+@@ -400,8 +400,13 @@
+ 		$r_page  = rawurlencode($page);
+ 		$s_page  = htmlspecialchars($page, ENT_QUOTES);
+ 		$passage = get_pg_passage($page);
++		if ($cmd == 'read') {
++			$url = get_page_uri($page);
++		} else {
++			$url = $href . $r_page;
++		}
+ 
+-		$str = '   <li><a href="' . $href . $r_page . '">' .
++		$str = '   <li><a href="' . $url . '">' .
+ 			$s_page . '</a>' . $passage;
+ 
+ 		if ($withfilename) {
+@@ -908,6 +913,23 @@
+ 	return $script;
+ }
+ 
++function get_page_uri($page, $query = '')
++{
++	if (exist_plugin('rewritemap')) {
++		$url = plugin_rewritemap_url($page);
++		if ($query != '') {
++			$url .= '?' . $query;
++		}
++		return $url;
++	}
++
++	$url = get_script_uri() . '?' . rawurlencode($page);
++	if ($query != '') {
++		$url .= '&amp;' . $query;
++	}
++	return $url;
++}
++
+ // Remove null(\0) bytes from variables
+ //
+ // NOTE: PHP had vulnerabilities that opens "hoge.php" via fopen("hoge.php\0.txt") etc.
+diff -ur -x .svn plus.orig/lib/fuzzy.php plus.rewritemap/lib/fuzzy.php
+--- plus.orig/lib/fuzzy.php	2007-06-27 17:54:25.031250000 -0400
++++ plus.rewritemap/lib/fuzzy.php	2007-12-22 07:35:49.015625000 -0500
+@@ -79,8 +79,8 @@
+ 		$r_page  = rawurlencode($page);
+ 		$s_page  = htmlspecialchars($page);
+ 		$passage = get_passage($time);
+-		$retval .= ' <li><a href="' . $script . '?cmd=read&amp;page=' .
+-			$r_page . '&amp;word=' . $r_word . '">' . $s_page .
++		$retval .= ' <li><a href="' .
++			get_page_uri($page, 'word=' . $r_word) . '">' . $s_page .
+ 			'</a>' . $passage . '</li>' . "\n";
+ 	}
+ 	$retval .= '</ul>' . "\n";
+diff -ur -x .svn plus.orig/lib/html.php plus.rewritemap/lib/html.php
+--- plus.orig/lib/html.php	2007-12-19 19:55:38.140625000 -0500
++++ plus.rewritemap/lib/html.php	2007-12-22 07:35:49.078125000 -0500
+@@ -57,14 +57,14 @@
+ 	$_LINK['freeze']   = "$script?cmd=freeze&amp;page=$r_page";
+ 	$_LINK['help']     = "$script?cmd=help";
+ 	$_LINK['list']     = "$script?cmd=list";
+-	$_LINK['menu']     = "$script?$menubar";
++	$_LINK['menu']     = get_page_uri($menubar);
+ 	$_LINK['new']      = "$script?plugin=newpage&amp;refer=$r_page";
+ 	$_LINK['newsub']   = "$script?plugin=newpage_subdir&amp;directory=$r_page";
+-	$_LINK['read']     = "$script?cmd=read&amp;page=$r_page";
++	$_LINK['read']     = get_page_uri($_page);
+ 	$_LINK['rdf']      = "$script?cmd=rss&amp;ver=1.0";
+-	$_LINK['recent']   = "$script?" . rawurlencode($whatsnew);
++	$_LINK['recent']   = get_page_uri($whatsnew);
+ 	$_LINK['refer']    = "$script?plugin=referer&amp;page=$r_page";
+-	$_LINK['reload']   = "$script?$r_page";
++	$_LINK['reload']   = get_page_uri($_page);
+ 	$_LINK['rename']   = "$script?plugin=rename&amp;refer=$r_page";
+ 	$_LINK['print']    = "$script?plugin=print&amp;page=$r_page";
+ 	$_LINK['rss']      = "$script?cmd=rss";
+@@ -77,10 +77,10 @@
+ 	$_LINK['log_update'] = "$script?cmd=logview&amp;page=$r_page";
+ 	$_LINK['log_down']   = "$script?cmd=logview&amp;kind=download&amp;page=$r_page";
+ 	$_LINK['search']   = "$script?cmd=search";
+-	$_LINK['side']     = "$script?$sidebar";
++	$_LINK['side']     = get_page_uri($sidebar);
+ 	$_LINK['source']   = "$script?plugin=source&amp;page=$r_page";
+ 	$_LINK['template'] = "$script?plugin=template&amp;refer=$r_page";
+-	$_LINK['top']      = "$script?" . rawurlencode($defaultpage);
++	$_LINK['top']      = get_page_uri($defaultpage);
+ 	if ($trackback) {
+ 		$tb_id = tb_get_id($_page);
+ 		$_LINK['trackback'] = "$script?plugin=tb&amp;__mode=view&amp;tb_id=$tb_id";
+@@ -394,9 +394,9 @@
+ 		$s_page   = htmlspecialchars($page);
+ 		$passage  = get_passage($lastmod);
+ 		$_links[] = $tag ?
+-			'<a href="' . $script . '?' . $r_page . '" title="' .
++			'<a href="' . get_page_uri($page) . '" title="' .
+ 			$s_page . ' ' . $passage . '">' . $s_page . '</a>' :
+-			'<a href="' . $script . '?' . $r_page . '">' .
++			'<a href="' . get_page_uri($page) . '">' .
+ 			$s_page . '</a>' . $passage;
+ 	}
+ 	if (empty($_links)) return ''; // Nothing
+diff -ur -x .svn plus.orig/lib/make_link.php plus.rewritemap/lib/make_link.php
+--- plus.orig/lib/make_link.php	2007-06-27 17:54:25.062500000 -0400
++++ plus.rewritemap/lib/make_link.php	2007-12-22 07:35:49.140625000 -0500
+@@ -318,7 +318,7 @@
+ 		if (PKWK_ALLOW_RELATIVE_FOOTNOTE_ANCHOR) {
+ 			$script = '';
+ 		} else {
+-			$script = get_script_uri() . '?' . rawurlencode($page);
++			$script = get_page_uri($page);
+ 		}
+ 
+ 		$id   = ++$note_id;
+@@ -536,7 +536,7 @@
+ 
+ 		$url = get_interwiki_url($name, $this->param);
+ 		$this->url = ($url === FALSE) ?
+-			$script . '?' . rawurlencode('[[' . $name . ':' . $this->param . ']]') :
++			get_page_uri('[[' . $name . ':' . $this->param . ']]') :
+ 			htmlspecialchars($url);
+ 
+ 		return parent::setParam(
+@@ -872,7 +872,7 @@
+ 	if ( is_page($page) ) {
+ 		$f_page = rawurlencode($page);
+ 		$passage = get_pg_passage($page,FALSE);
+-		return '<a href="' . $script . '?' . $f_page . '" class="linktip" title="' . $s_glossary . $passage . '">' . $term . '</a>';
++		return '<a href="' . get_page_uri($page) . '" class="linktip" title="' . $s_glossary . $passage . '">' . $term . '</a>';
+ 	} elseif ($ajax) {
+ 		return '<span class="tooltip"' . 
+ 			' onmouseover="' . "javascript:this.style.backgroundColor='#ffe4e1';showGlossaryPopup('" . $script . "?plugin=tooltip&amp;q=" . $s_term . "',event,0.2);" . '"' .
+@@ -928,10 +928,10 @@
+ 			$al_left = $al_right = '';
+ 		}
+ 
+-		return $al_left . '<a ' . 'href="' . $script . '?' . $r_page . $anchor .
++		return $al_left . '<a ' . 'href="' . get_page_uri($page) . $anchor .
+ 			'"' . $title . '>' . $s_alias . '</a>' . $al_right;
+ //		return open_uri_in_new_window($al_left .
+-//			'<a href="' . $script . '?' . $r_page . $anchor . '"' . $title . '>' .
++//			'<a href="' . get_page_uri($page) . $anchor . '"' . $title . '>' .
+ //			$s_alias . '</a>' . $al_right, 'make_pagelink');
+ 	} else {
+ 		// Dangling link
+diff -ur -x .svn plus.orig/lib/spam.php plus.rewritemap/lib/spam.php
+--- plus.orig/lib/spam.php	2007-12-19 19:55:38.296875000 -0500
++++ plus.rewritemap/lib/spam.php	2007-12-22 07:35:49.187500000 -0500
+@@ -1013,7 +1013,7 @@
+ 
+ 	$summary['COMMENT'] = $action;
+ 	$summary['PAGE']    = '[blocked] ' . (is_pagename($page) ? $page : '');
+-	$summary['URI']     = get_script_uri() . '?' . rawurlencode($page);
++	$summary['URI']     = get_page_uri($page);
+ 	$summary['USER_AGENT']  = TRUE;
+ 	$summary['REMOTE_ADDR'] = TRUE;
+ 	pkwk_mail_notify($notify_subject,  var_export($target, TRUE), $summary, TRUE);
+diff -ur -x .svn plus.orig/lib/trackback.php plus.rewritemap/lib/trackback.php
+--- plus.orig/lib/trackback.php	2007-06-27 17:54:25.031250000 -0400
++++ plus.rewritemap/lib/trackback.php	2007-12-22 07:35:49.234375000 -0500
+@@ -107,7 +107,7 @@
+ 	// Sender's information
+ 	$putdata = array(
+ 		'title'     => $page, // Title = It's page name
+-		'url'       => $script . '?' . $r_page, // will be rawurlencode() at send phase
++		'url'       => get_page_uri($page), // will be rawurlencode() at send phase
+ 		'excerpt'   => mb_strimwidth(preg_replace("/[\r\n]/", ' ', $excerpt), 0, 255, '...'),
+ 		'blog_name' => $page_title . ' (' . PLUGIN_TRACKBACK_VERSION . ')',
+ 		'charset'   => SOURCE_ENCODING // Ping text encoding (Not defined)
+@@ -155,7 +155,7 @@
+ function tb_get_rdf($page)
+ {
+ 	$_script = get_script_uri(); // Get absolute path
+-	$r_page = rawurlencode($page);
++	$url = get_page_uri($page);
+ 	$tb_id  = tb_get_id($page);
+ 	// $dcdate = substr_replace(get_date('Y-m-d\TH:i:sO', $time), ':', -2, 0);
+ 	// dc:date="$dcdate"
+@@ -166,8 +166,8 @@
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:trackback="http://madskills.com/public/xml/rss/module/trackback/">
+  <rdf:Description
+-   rdf:about="$_script?$r_page"
+-   dc:identifier="$_script?$r_page"
++   rdf:about="$url"
++   dc:identifier="$url"
+    dc:title="$page"
+    trackback:ping="$_script?tb_id=$tb_id" />
+ </rdf:RDF>
+diff -ur -x .svn plus.orig/plugin/amazon.inc.php plus.rewritemap/plugin/amazon.inc.php
+--- plus.orig/plugin/amazon.inc.php	2007-06-27 17:53:59.984375000 -0400
++++ plus.rewritemap/plugin/amazon.inc.php	2007-12-22 07:35:49.281250000 -0500
+@@ -204,12 +204,12 @@
+   $r_page = $s_page . '/' . $check->asin;
+   $r_page_url = rawurlencode($r_page);
+ 
+-  if (!check_readable($r_page, false, false)) header("Location: $script?cmd=read&page=$r_page_url");
++  if (!check_readable($r_page, false, false)) header('Location: ' . get_page_uri($r_page));
+   elseif (check_editable($r_page, false, false)) {
+     $info = new amazon_getinfo($check->asin, 'heavy');
+     $title = $info->items['title'];
+     if ($title == '' or preg_match('/^\//', $s_page)) {
+-      header("Location: $script?cmd=read&page=" . encode($s_page));
++      header('Location: ' . get_page_uri(encode($s_page)));
+     }
+     $body = "#amazon($check->asin,,image)\n*$title\n" . $amazon_body;
+     amazon_review_save($r_page, $body);
+diff -ur -x .svn plus.orig/plugin/aname.inc.php plus.rewritemap/plugin/aname.inc.php
+--- plus.orig/plugin/aname.inc.php	2007-06-27 17:53:57.750000000 -0400
++++ plus.rewritemap/plugin/aname.inc.php	2007-12-22 07:35:49.312500000 -0500
+@@ -117,7 +117,7 @@
+ 		$attr_id = ' id="' . $id . '"';
+ 	}
+ //miko
+-	$url     = $f_full  ? get_script_uri() . '?' . rawurlencode($vars['page']) : '';
++	$url     = $f_full  ? get_page_uri($vars['page']) : '';
+ 	if ($body != '') {
+ 		$href  = ' href="' . $url . '#' . $id . '"';
+ 		$title = ' title="' . $id . '"';
+diff -ur -x .svn plus.orig/plugin/article.inc.php plus.rewritemap/plugin/article.inc.php
+--- plus.orig/plugin/article.inc.php	2007-06-27 17:54:00.609375000 -0400
++++ plus.rewritemap/plugin/article.inc.php	2007-12-22 07:35:49.328125000 -0500
+@@ -132,7 +132,7 @@
+ 			$mailbody .= "\n\n" . '---' . "\n";
+ 			$mailbody .= _('Author: ') . $post['name'] . ' (' . $now . ')' . "\n";
+ 			$mailbody .= _('Page: ') . $post['refer'] . "\n";
+-			$mailbody .= '　 URL: ' . $script . '?' . rawurlencode($post['refer']) . "\n";
++			$mailbody .= '　 URL: ' . get_page_uri($post['refer']) . "\n";
+ 			$mailbody = mb_convert_encoding($mailbody, 'JIS');
+ 
+ 			$mailaddheader = 'From: ' . PLUGIN_ARTICLE_MAIL_FROM;
+diff -ur -x .svn plus.orig/plugin/attach.inc.php plus.rewritemap/plugin/attach.inc.php
+--- plus.orig/plugin/attach.inc.php	2007-12-19 19:55:36.218750000 -0500
++++ plus.rewritemap/plugin/attach.inc.php	2007-12-22 07:35:49.343750000 -0500
+@@ -911,8 +911,7 @@
+ 			$footer['ACTION']   = 'File deleted';
+ 			$footer['FILENAME'] = & $this->file;
+ 			$footer['PAGE']     = & $this->page;
+-			$footer['URI']      = get_script_uri() .
+-				'?' . rawurlencode($this->page);
++			$footer['URI']      = get_page_uri($this->page);
+ 			$footer['USER_AGENT']  = TRUE;
+ 			$footer['REMOTE_ADDR'] = TRUE;
+ 			pkwk_mail_notify($notify_subject, "\n", $footer) or
+diff -ur -x .svn plus.orig/plugin/back.inc.php plus.rewritemap/plugin/back.inc.php
+--- plus.orig/plugin/back.inc.php	2007-06-27 17:53:58.312500000 -0400
++++ plus.rewritemap/plugin/back.inc.php	2007-12-22 07:35:49.359375000 -0500
+@@ -47,9 +47,8 @@
+ 				$href = rawurlencode($href);
+ 			} else {
+ 				$array = anchor_explode($href);
+-				$array[0] = rawurlencode($array[0]);
+ 				$array[1] = ($array[1] != '') ? '#' . rawurlencode($array[1]) : '';
+-				$href = $script . '?' . $array[0] .  $array[1];
++				$href = get_page_uri($array[0]) .  $array[1];
+ 				$link = is_page($array[0]);
+ 			}
+ 		} else {
+diff -ur -x .svn plus.orig/plugin/backup.inc.php plus.rewritemap/plugin/backup.inc.php
+--- plus.orig/plugin/backup.inc.php	2007-07-24 20:31:05.859375000 -0400
++++ plus.rewritemap/plugin/backup.inc.php	2007-12-22 07:35:49.375000000 -0500
+@@ -94,7 +94,7 @@
+ 
+ 	if ($is_page) {
+ 		$body .= ' <li>' . str_replace('$1',
+-			'<a href="' . $script . '?' . $r_page . '">' . $s_page . '</a>',
++			'<a href="' . get_page_uri($page) . '">' . $s_page . '</a>',
+ 			$_msg_goto) . "\n";
+ 	} else {
+ 		$body .= ' <li>' . str_replace('$1', $s_page, $_msg_deleted) . "\n";
+@@ -408,11 +408,11 @@
+ 	$backups = _backup_file_exists($page) ? get_backup($page) : array();
+ 	if (count($backups) == 0)
+ 	{
+-		$retval[1] .= '<option value="' . $script . '?' . $r_page . '" selected="selected">' . _('->') . " $date(No.1)</option>\n";
++		$retval[1] .= '<option value="' . get_page_uri($page) . '" selected="selected">' . _('->') . " $date(No.1)</option>\n";
+ 		return join('',$retval);
+ 	}
+ 	$maxcnt = count($backups) + 1;
+-	$retval[1] .= '<option value="' . $script . '?' . $r_page . '" selected="selected">' . _('->') . " $date(No.$maxcnt)</option>\n";
++	$retval[1] .= '<option value="' . get_page_uri($page) . '" selected="selected">' . _('->') . " $date(No.$maxcnt)</option>\n";
+ 	$backups = array_reverse($backups, True);
+ 	foreach ($backups as $age=>$data) {
+ 		$time = (isset($data['real'])) ? $data['real'] : $data['time'];
+diff -ur -x .svn plus.orig/plugin/bliki.inc.php plus.rewritemap/plugin/bliki.inc.php
+--- plus.orig/plugin/bliki.inc.php	2007-12-19 21:41:46.046875000 -0500
++++ plus.rewritemap/plugin/bliki.inc.php	2007-12-22 07:35:49.390625000 -0500
+@@ -336,7 +336,7 @@
+ 
+ 	return sprintf($_bliki_msg['msg_more'],
+ 		htmlspecialchars($page),
+-		$script . '?cmd=read&page=' . rawurlencode($page) . '#more' );
++		get_page_uri($page) . '#more' );
+ }
+ 
+ ?>
+diff -ur -x .svn plus.orig/plugin/bugtrack.inc.php plus.rewritemap/plugin/bugtrack.inc.php
+--- plus.orig/plugin/bugtrack.inc.php	2007-12-19 19:55:36.343750000 -0500
++++ plus.rewritemap/plugin/bugtrack.inc.php	2007-12-22 07:35:49.406250000 -0500
+@@ -207,7 +207,7 @@
+ 		$post['version'], $post['body']);
+ 
+ 	pkwk_headers_sent();
+-	header('Location: ' . get_script_uri() . '?' . rawurlencode($page));
++	header('Location: ' . get_page_uri($page));
+ 	exit;
+ }
+ 
+diff -ur -x .svn plus.orig/plugin/calendar.inc.php plus.rewritemap/plugin/calendar.inc.php
+--- plus.orig/plugin/calendar.inc.php	2007-06-27 17:53:58.343750000 -0400
++++ plus.rewritemap/plugin/calendar.inc.php	2007-12-22 07:35:49.421875000 -0500
+@@ -135,7 +135,7 @@
+ 		}
+ 
+ 		if (is_page($page)) {
+-			$link = '<a href="'.$script.'?'.$r_page.'" title="'.$s_page.'"><strong>'.$day.'</strong></a>';
++			$link = '<a href="'.get_page_uri($page).'" title="'.$s_page.'"><strong>'.$day.'</strong></a>';
+ 		} elseif ($read_only) {
+ 			$link = $day;
+ 		} else {
+diff -ur -x .svn plus.orig/plugin/calendar2.inc.php plus.rewritemap/plugin/calendar2.inc.php
+--- plus.orig/plugin/calendar2.inc.php	2007-06-27 17:54:00.234375000 -0400
++++ plus.rewritemap/plugin/calendar2.inc.php	2007-12-22 07:35:49.421875000 -0500
+@@ -88,7 +88,7 @@
+ EOD;
+ 
+ 	if ($prefix) $ret .= "\n" .
+-		'      <br />[<a href="' . $script . '?' . $r_base . '">' . $s_base . '</a>]';
++		'      <br />[<a href="' . get_page_uri($base) . '">' . $s_base . '</a>]';
+ 
+ 	$ret .= "\n" .
+ 		'     </td>' . "\n" .
+@@ -129,7 +129,7 @@
+ 		}
+ 
+ 		if (is_page($page)) {
+-			$link = '<a href="' . $script . '?' . $r_page . '" title="' . $s_page .
++			$link = '<a href="' . get_page_uri($page) . '" title="' . $s_page .
+ 				'"><strong>' . $day . '</strong></a>';
+ 		} else {
+ 			// if (PKWK_READONLY) {
+diff -ur -x .svn plus.orig/plugin/calendar_viewer.inc.php plus.rewritemap/plugin/calendar_viewer.inc.php
+--- plus.orig/plugin/calendar_viewer.inc.php	2007-07-24 20:31:06.125000000 -0400
++++ plus.rewritemap/plugin/calendar_viewer.inc.php	2007-12-22 07:35:49.437500000 -0500
+@@ -200,7 +200,7 @@
+ 
+ 		// if (PKWK_READONLY) {
+ 		if (auth::check_role('readonly')) {
+-			$link   = $script . '?' . $r_page;
++			$link   = get_page_uri($page);
+ 		} else {
+ 			$link   = $script . '?cmd=edit&amp;page=' . $r_page;
+ 		}
+diff -ur -x .svn plus.orig/plugin/code/codehighlight.php plus.rewritemap/plugin/code/codehighlight.php
+--- plus.orig/plugin/code/codehighlight.php	2007-06-27 17:53:55.515625000 -0400
++++ plus.rewritemap/plugin/code/codehighlight.php	2007-12-22 07:35:49.562500000 -0500
+@@ -105,11 +105,11 @@
+ 				$_code_expand = _('Everything is expanded.');
+ 				$_code_short = _('Everything is shortened.');
+ 				$menu .= '<img src="'.PLUGIN_CODE_OUTLINE_OPEN_FILE.'" style="cursor: hand" alt="'.$_code_expand.'" title="'.$_code_expand.'" '
+-					.'onclick="javascript:code_all_outline(\''.PLUGIN_CODE_HEADER.$id_number.'\','.$data['blocknum'].',\'\',\''.IMAGE_DIR.'\')" '
+-					.'onkeypress="javascript:code_all_outline(\''.CODE_HEADER.$id_number.'\','.$data['blocknum'].',\'\',\''.IMAGE_DIR.'\')" />';
++					.'onclick="javascript:code_all_outline(\''.PLUGIN_CODE_HEADER.$id_number.'\','.$data['blocknum'].',\'\',\''.IMAGE_URI.'\')" '
++					.'onkeypress="javascript:code_all_outline(\''.CODE_HEADER.$id_number.'\','.$data['blocknum'].',\'\',\''.IMAGE_URI.'\')" />';
+ 				$menu .= '<img src="'.PLUGIN_CODE_OUTLINE_CLOSE_FILE.'" style="cursor: hand" alt="'.$_code_short.'" title="'.$_code_short.'" '
+-					.'onclick="javascript:code_all_outline(\''.PLUGIN_CODE_HEADER.$id_number.'\','.$data['blocknum'].',\'none\',\''.IMAGE_DIR.'\')" '
+-					.'onkeypress="javascript:code_all_outline(\''.PLUGIN_CODE_HEADER.$id_number.'\','.$data['blocknum'].",'none','".IMAGE_DIR.'\')" />'."\n";
++					.'onclick="javascript:code_all_outline(\''.PLUGIN_CODE_HEADER.$id_number.'\','.$data['blocknum'].',\'none\',\''.IMAGE_URI.'\')" '
++					.'onkeypress="javascript:code_all_outline(\''.PLUGIN_CODE_HEADER.$id_number.'\','.$data['blocknum'].",'none','".IMAGE_URI.'\')" />'."\n";
+ 			}
+ 			if ($option['comment']){
+ 				// コメントの開閉ボタン
+@@ -881,7 +881,7 @@
+ 						$id=$id_number.'_'.$array['blockno'];
+ 						if($plus=='')
+ 							$plus = '<a class="'.PLUGIN_CODE_HEADER.'outline" href="javascript:code_outline(\''
+-								.PLUGIN_CODE_HEADER.$id.'\',\''.IMAGE_DIR.'\')" id="'.PLUGIN_CODE_HEADER.$id.'a">-</a>';
++								.PLUGIN_CODE_HEADER.$id.'\',\''.IMAGE_URI.'\')" id="'.PLUGIN_CODE_HEADER.$id.'a">-</a>';
+ 						$plus1 .= '<span id="'.PLUGIN_CODE_HEADER.$id.'o">';
+ 						$plus2 .= '<span id="'.PLUGIN_CODE_HEADER.$id.'n">';
+ 						$nest=$array['nest'];
+diff -ur -x .svn plus.orig/plugin/comment.inc.php plus.rewritemap/plugin/comment.inc.php
+--- plus.orig/plugin/comment.inc.php	2007-07-24 20:31:05.906250000 -0400
++++ plus.rewritemap/plugin/comment.inc.php	2007-12-22 07:35:49.578125000 -0500
+@@ -115,7 +115,7 @@
+ 	$retvars['body'] = $body;
+ 
+ 	if ($vars['refpage']) {
+-		header("Location: $script?".rawurlencode($vars['refpage']));
++		header('Location: ' . get_page_uri($vars['refpage']));
+ 		exit;
+ 	}
+ 
+diff -ur -x .svn plus.orig/plugin/diff.inc.php plus.rewritemap/plugin/diff.inc.php
+--- plus.orig/plugin/diff.inc.php	2007-06-27 17:53:58.671875000 -0400
++++ plus.rewritemap/plugin/diff.inc.php	2007-12-22 07:35:49.593750000 -0500
+@@ -50,7 +50,7 @@
+ 
+ 	$is_page = is_page($page);
+ 	if ($is_page) {
+-		$menu[] = ' <li>' . str_replace('$1', '<a href="' . $script . '?' . $r_page . '">' .
++		$menu[] = ' <li>' . str_replace('$1', '<a href="' . get_page_uri($page) . '">' .
+ 			$s_page . '</a>', $_msg_goto) . '</li>';
+ 	} else {
+ 		$menu[] = ' <li>' . str_replace('$1', $s_page, $_msg_deleted) . '</li>';
+diff -ur -x .svn plus.orig/plugin/edit.inc.php plus.rewritemap/plugin/edit.inc.php
+--- plus.orig/plugin/edit.inc.php	2007-12-19 19:55:36.078125000 -0500
++++ plus.rewritemap/plugin/edit.inc.php	2007-12-22 07:35:49.609375000 -0500
+@@ -282,15 +282,15 @@
+ 	pkwk_headers_sent();
+ 	if (isset($vars['refpage']) && $vars['refpage'] != '') {
+ 		if ($partid) {
+-			header('Location: ' . get_script_uri() . '?' . rawurlencode($vars['refpage'])) . '#' . rawurlencode($partid);
++			header('Location: ' . get_page_uri($vars['refpage']) . '#' . rawurlencode($partid));
+ 		} else {
+-			header('Location: ' . get_script_uri() . '?' . rawurlencode($vars['refpage']));
++			header('Location: ' . get_page_uri($vars['refpage']));
+ 		}
+ 	} else {
+ 		if ($partid) {
+-			header('Location: ' . get_script_uri() . '?' . rawurlencode($page)) . '#' . rawurlencode($partid);
++			header('Location: ' . get_page_uri($page) . '#' . rawurlencode($partid));
+ 		} else {
+-			header('Location: ' . get_script_uri() . '?' . rawurlencode($page));
++			header('Location: ' . get_page_uri($page));
+ 		}
+ 	}
+ 	exit;
+@@ -301,7 +301,7 @@
+ {
+ 	global $vars;
+ 	pkwk_headers_sent();
+-	header('Location: ' . get_script_uri() . '?' . rawurlencode($vars['page']));
++	header('Location: ' . get_page_uri($vars['page']));
+ 	exit;
+ }
+ 
+diff -ur -x .svn plus.orig/plugin/hatena.inc.php plus.rewritemap/plugin/hatena.inc.php
+--- plus.orig/plugin/hatena.inc.php	2007-09-03 10:21:47.734375000 -0400
++++ plus.rewritemap/plugin/hatena.inc.php	2007-12-22 07:35:49.625000000 -0500
+@@ -113,7 +113,7 @@
+ 	if (! function_exists('pkwk_session_start')) return '';
+ 	if (pkwk_session_start() == 0) return '';
+ 
+-	$r_page = (empty($vars['page'])) ? '' : rawurlencode( decode($vars['page']) );
++	$page = (empty($vars['page'])) ? '' : decode($vars['page']);
+ 
+ 	$die_message = (PLUS_PROTECT_MODE) ? 'die_msg' : 'die_message';
+ 
+@@ -128,7 +128,7 @@
+ 	// LOGOUT
+ 	if (isset($vars['logout'])) {
+ 		$obj->auth_session_unset();
+-		header('Location: '.$script.'?'.$r_page);
++		header('Location: '.get_page_uri($page));
+ 		die();
+ 	}
+ 
+@@ -142,7 +142,7 @@
+ 	}
+ 
+ 	$obj->auth_session_put();
+-	header('Location: '.$script.'?'.$r_page);
++	header('Location: '.get_page_uri($page));
+ 	die();
+ }
+ 
+diff -ur -x .svn plus.orig/plugin/help.inc.php plus.rewritemap/plugin/help.inc.php
+--- plus.orig/plugin/help.inc.php	2007-06-27 17:54:00.031250000 -0400
++++ plus.rewritemap/plugin/help.inc.php	2007-12-22 07:35:49.640625000 -0500
+@@ -9,7 +9,7 @@
+ 	global $script;
+ 	global $help_page;
+ 
+-	$url = "$script?".rawurlencode($help_page);
++	$url = get_page_uri($help_page);
+ 	header("Location: $url");
+ 	die();
+ }
+diff -ur -x .svn plus.orig/plugin/include.inc.php plus.rewritemap/plugin/include.inc.php
+--- plus.orig/plugin/include.inc.php	2007-06-27 17:53:58.734375000 -0400
++++ plus.rewritemap/plugin/include.inc.php	2007-12-22 07:35:49.640625000 -0500
+@@ -81,7 +81,7 @@
+ 
+ 	$s_page = htmlspecialchars($page);
+ 	$r_page = rawurlencode($page);
+-	$link = '<a href="' . $script . '?' . $r_page . '">' . $s_page . '</a>'; // Read link
++	$link = '<a href="' . get_page_uri($page) . '">' . $s_page . '</a>'; // Read link
+ 
+ 	// I'm stuffed
+ 	if (isset($included[$page])) {
+diff -ur -x .svn plus.orig/plugin/js_init.inc.php plus.rewritemap/plugin/js_init.inc.php
+--- plus.orig/plugin/js_init.inc.php	2007-07-10 05:16:14.796875000 -0400
++++ plus.rewritemap/plugin/js_init.inc.php	2007-12-22 07:36:20.093750000 -0500
+@@ -12,15 +12,9 @@
+ 	global $language;
+ 
+ 	$rc = '';
+-	//$const = array('SKIN_URI','IMAGE_URI','DEFAULT_LANG');
+-	//$const = array('SKIN_DIR','IMAGE_DIR','DEFAULT_LANG');
+-	//foreach( $const as $var){
+-	//	$rc .= 'var '.$var.'="'.constant($var).'";'."\n";
+-	//}
+-
+-	$const = array('SKIN_DIR'=>'SKIN_URI','IMAGE_DIR'=>'IMAGE_URI','DEFAULT_LANG'=>'DEFAULT_LANG');
+-	foreach( $const as $key=>$val){
+-		$rc .= 'var '.$key.'="'.constant($val).'";'."\n";
++	$const = array('SKIN_URI','IMAGE_URI','DEFAULT_LANG');
++	foreach( $const as $var){
++		$rc .= 'var '.$var.'="'.constant($var).'";'."\n";
+ 	}
+ 	unset($const);
+ 
+diff -ur -x .svn plus.orig/plugin/jugemkey.inc.php plus.rewritemap/plugin/jugemkey.inc.php
+--- plus.orig/plugin/jugemkey.inc.php	2007-09-03 10:21:47.500000000 -0400
++++ plus.rewritemap/plugin/jugemkey.inc.php	2007-12-22 07:35:49.656250000 -0500
+@@ -113,7 +113,7 @@
+ 	if (! function_exists('pkwk_session_start')) return '';
+ 	if (pkwk_session_start() == 0) return '';
+ 
+-	$r_page = (empty($vars['page'])) ? '' : rawurlencode($vars['page']);
++	$page = (empty($vars['page'])) ? '' : $vars['page'];
+ 
+ 	$die_message = (PLUS_PROTECT_MODE) ? 'die_msg' : 'die_message';
+ 
+@@ -128,7 +128,7 @@
+ 	// LOGOUT
+ 	if (isset($vars['logout'])) {
+ 		$obj->auth_session_unset();
+-		header('Location: '.$script.'?'.$r_page);
++		header('Location: '.get_page_uri($page));
+ 		die();
+ 	}
+ 
+@@ -153,7 +153,7 @@
+ 	}
+ 
+ 	$obj->auth_session_put();
+-	header('Location: '.$script.'?'.$r_page);
++	header('Location: '.get_page_uri($page));
+ 	die();
+ }
+ 
+diff -ur -x .svn plus.orig/plugin/login.inc.php plus.rewritemap/plugin/login.inc.php
+--- plus.orig/plugin/login.inc.php	2007-07-24 20:31:06.187500000 -0400
++++ plus.rewritemap/plugin/login.inc.php	2007-12-22 07:35:49.671875000 -0500
+@@ -179,7 +179,7 @@
+ {
+ 	global $vars, $script;
+ 
+-	$retloc = (isset($vars['page'])) ? $script.'?'.rawurlencode($vars['page']) : $script;
++	$retloc = (isset($vars['page'])) ? get_page_uri($vars['page']) : $script;
+ 	header( 'Location: ' . $retloc );
+ 	die();
+ }
+diff -ur -x .svn plus.orig/plugin/logview.inc.php plus.rewritemap/plugin/logview.inc.php
+--- plus.orig/plugin/logview.inc.php	2007-07-10 05:16:14.937500000 -0400
++++ plus.rewritemap/plugin/logview.inc.php	2007-12-22 07:35:49.671875000 -0500
+@@ -146,7 +146,7 @@
+ 				$age = log::get_backup_age($page,$data['ts']);
+ 				switch($age) {
+ 				case -1: // データなし
+-					$body .= '<a class="ext" href="'.$script.'?'.rawurlencode($page).
++					$body .= '<a class="ext" href="'.get_page_uri($page).
+ 						'" rel="nofollow">none</a>';
+ 					break;
+ 				case 0:  // diff
+diff -ur -x .svn plus.orig/plugin/ls2.inc.php plus.rewritemap/plugin/ls2.inc.php
+--- plus.orig/plugin/ls2.inc.php	2007-06-27 17:54:00.437500000 -0400
++++ plus.rewritemap/plugin/ls2.inc.php	2007-12-22 07:35:49.703125000 -0500
+@@ -125,7 +125,7 @@
+ 	$r_page = rawurlencode($page);
+ 	$s_page = htmlspecialchars($page);
+ 	$title  = $s_page . ' ' . get_pg_passage($page, FALSE);
+-	$href   = $script . '?cmd=read&amp;page=' . $r_page;
++	$href   = get_page_uri($page);
+ 
+ 	plugin_ls2_list_push($params, $level);
+ 	$ret = $include ? '<li>include ' : '<li>';
+diff -ur -x .svn plus.orig/plugin/minicalendar.inc.php plus.rewritemap/plugin/minicalendar.inc.php
+--- plus.orig/plugin/minicalendar.inc.php	2007-06-27 17:54:00.750000000 -0400
++++ plus.rewritemap/plugin/minicalendar.inc.php	2007-12-22 07:35:49.718750000 -0500
+@@ -103,7 +103,7 @@
+ EOD;
+ 	
+ 	if ($prefix) {
+-//		$ret .= "\n      <br />[<a href=\"$script?$r_base\">$s_base</a>]";
++//		$ret .= "\n      <br />[<a href=\"" . get_page_uri($base) . "\">$s_base</a>]";
+ 		$ret .= "\n      <br />[<a href=\"$script?plugin=minicalendar&amp;file=$r_base&amp;date=$this_date_str&amp;mode=$today_args\">$s_base</a>]";
+ 	}
+ 	
+@@ -147,7 +147,7 @@
+ 		}
+ 		
+ 		if (is_page($page)) {
+-			$link = "<a class=\"small\" href=\"$script?$r_page\" title=\"$s_page\"><strong>$day</strong></a>";
++			$link = "<a class=\"small\" href=\"" . get_page_uri($page) . "\" title=\"$s_page\"><strong>$day</strong></a>";
+ 		}
+ 		else {
+ 			$link = "<a class=\"small\" href=\"$script?cmd=edit&amp;page=$r_page&amp;refer=$r_base\" title=\"$s_page\">$day</a>";
+@@ -204,7 +204,7 @@
+ EOD;
+ 	
+ 	if ($prefix) {
+-//		$ret .= "\n      <br />[<a href=\"$script?$r_base\">$s_base</a>]";
++//		$ret .= "\n      <br />[<a href=\"" . get_page_uri($base) . "\">$s_base</a>]";
+ 		$ret .= "\n      <br />[<a href=\"$script?plugin=minicalendar&amp;file=$r_base&amp;date=$this_date_str&amp;mode=$today_args\">$s_base</a>]";
+ 	}
+ 	
+@@ -249,7 +249,7 @@
+ 		
+ 		if (is_page($page)) {
+ 			if ($day < 10) { $spc = '&nbsp;'; } else { $spc = ''; }
+-			$link = "$spc<a class=\"small\" href=\"$script?$r_page\" title=\"$s_page\"><font color=\"red\">$day</font></a>";
++			$link = "$spc<a class=\"small\" href=\"" . get_page_uri($page) . "\" title=\"$s_page\"><font color=\"red\">$day</font></a>";
+ 		}
+ 		else {
+ 			if ($day < 10) { $spc = '&nbsp;'; } else { $spc = ''; }
+diff -ur -x .svn plus.orig/plugin/minicalendar_viewer.inc.php plus.rewritemap/plugin/minicalendar_viewer.inc.php
+--- plus.orig/plugin/minicalendar_viewer.inc.php	2007-06-27 17:53:59.562500000 -0400
++++ plus.rewritemap/plugin/minicalendar_viewer.inc.php	2007-12-22 07:35:49.718750000 -0500
+@@ -219,7 +219,7 @@
+ 
+ 		// if (PKWK_READONLY) {
+ 		if (auth::check_role('readonly')) {
+-			$link = $script . '?' . $r_page;
++			$link = get_page_uri($page);
+ 		} else {
+ 			$link = $script . '?cmd=edit&amp;page=' . $r_page . '&amp;refpage=' . $refpage;
+ 		}
+diff -ur -x .svn plus.orig/plugin/mixirecent.inc.php plus.rewritemap/plugin/mixirecent.inc.php
+--- plus.orig/plugin/mixirecent.inc.php	2007-06-27 17:54:00.531250000 -0400
++++ plus.rewritemap/plugin/mixirecent.inc.php	2007-12-22 07:35:49.734375000 -0500
+@@ -94,7 +94,7 @@
+ 				// No need to link to the page now you read, notifies where you just read
+ 				$items .= ' <li>' . $s_page . '</li>' . "\n";
+ 			} else {
+-				$items .= ' <li><a href="' . $script . '?' . $r_page . '" title="' .
++				$items .= ' <li><a href="' . get_page_uri($page) . '" title="' .
+ 					$s_page . ' ' . $pg_passage . '">' . $s_page . '</a></li>' . "\n";
+ 			}
+ 			$vars['page'] = $savepage;
+@@ -103,7 +103,7 @@
+ 				// No need to link to the page now you read, notifies where you just read
+ 				$items .= ' <li>' . $s_page . '</li>' . "\n";
+ 			} else {
+-				$items .= ' <li><a href="' . $script . '?' . $r_page . '" title="' .
++				$items .= ' <li><a href="' . get_page_uri($page) . '" title="' .
+ 					$s_page . ' ' . $pg_passage . '">' . $s_page . '</a></li>' . "\n";
+ 			}
+ 		}
+diff -ur -x .svn plus.orig/plugin/mixirss.inc.php plus.rewritemap/plugin/mixirss.inc.php
+--- plus.orig/plugin/mixirss.inc.php	2007-12-19 19:55:36.125000000 -0500
++++ plus.rewritemap/plugin/mixirss.inc.php	2007-12-22 07:35:49.750000000 -0500
+@@ -63,6 +63,7 @@
+ 	foreach (array_splice($source, 0, $rss_max) as $line) {
+ 		list($time, $page) = explode("\t", rtrim($line));
+ 		$r_page = rawurlencode($page);
++		$url    = get_page_uri($page);
+ 		$title  = mb_convert_encoding($page, 'UTF-8', SOURCE_ENCODING);
+ 
+ 		switch ($version) {
+@@ -75,7 +76,7 @@
+ 			$items .= <<<EOD
+ <item>
+  <title>$title</title>
+- <link>$self?$r_page</link>
++ <link>$url</link>
+ $date
+ </item>
+ 
+@@ -84,8 +85,7 @@
+ 
+ 		case '1.0':
+ 			// Add <item> into <items>
+-//			$rdf_li .= '    <rdf:li rdf:resource="' . $self .
+-//				'?' . $r_page . '" />' . "\n";
++//			$rdf_li .= '    <rdf:li rdf:resource="' . $url . '" />' . "\n";
+ 
+ 			$date = substr_replace(get_date('Y-m-d\TH:i:sO', $time), ':', -2, 0);
+ 			$trackback_ping = '';
+@@ -108,13 +108,13 @@
+ 						$anchortitle = preg_replace("/[\r\n]/",' ',$anchortitle);
+ 						$anchortitle = '<![CDATA[' . mb_convert_encoding($anchortitle, 'UTF-8', SOURCE_ENCODING) . '(' . $title . ')' . ']]>';
+ 						$sharp = '#';
+-						$rdf_hx .= '    <rdf:li rdf:resource="' . $self . '?' . $r_page . $sharp . $matches[3] . '" />' . "\n";
++						$rdf_hx .= '    <rdf:li rdf:resource="' . $url . $sharp . $matches[3] . '" />' . "\n";
+ 						$itemhx .= <<<EOD
+-<item rdf:about="$self?$r_page{$sharp}{$matches[3]}">
++<item rdf:about="$url{$sharp}{$matches[3]}">
+  <title>{$anchortitle}</title>
+- <link>$self?$r_page{$sharp}{$matches[3]}</link>
++ <link>$url{$sharp}{$matches[3]}</link>
+  <dc:date>$date</dc:date>
+- <dc:identifier>$self?$r_page{$sharp}{$matches[3]}</dc:identifier>
++ <dc:identifier>$url{$sharp}{$matches[3]}</dc:identifier>
+ $trackback_ping
+ </item>
+ 
+@@ -124,13 +124,13 @@
+ 						$anchortitle = preg_replace("/[\r\n]/",' ',$anchortitle);
+ 						$anchortitle = '<![CDATA[' . mb_convert_encoding($anchortitle, 'UTF-8', SOURCE_ENCODING) . '(' . $title . ')' . ']]>';
+ 						$sharp = '#';
+-						$rdf_lx .= '    <rdf:li rdf:resource="' . $self . '?' . $r_page . '" />' . "\n";
++						$rdf_lx .= '    <rdf:li rdf:resource="' . $url . '" />' . "\n";
+ 						$itemlx .= <<<EOD
+-<item rdf:about="$self?$r_page">
++<item rdf:about="$url">
+  <title>{$anchortitle}</title>
+- <link>$self?$r_page</link>
++ <link>$url</link>
+  <dc:date>$date</dc:date>
+- <dc:identifier>$self?$r_page</dc:identifier>
++ <dc:identifier>$url</dc:identifier>
+ $trackback_ping
+ </item>
+ 
+@@ -145,14 +145,14 @@
+ 					$items .= $itemlx;
+ 				} else {
+ 					// default
+-					$rdf_li .= '    <rdf:li rdf:resource="' . $self . '?' . $r_page . '" />' . "\n";
++					$rdf_li .= '    <rdf:li rdf:resource="' . $url . '" />' . "\n";
+ 					$items .= <<<EOD
+-<item rdf:about="$self?$r_page">
++<item rdf:about="$url">
+  <title>$title</title>
+- <link>$self?$r_page</link>
++ <link>$url</link>
+ $description
+  <dc:date>$date</dc:date>
+- <dc:identifier>$self?$r_page</dc:identifier>
++ <dc:identifier>$url</dc:identifier>
+ $trackback_ping
+ </item>
+ 
+@@ -167,7 +167,7 @@
+ 				$description = mb_strimwidth(preg_replace("/[\r\n]/",' ',$description),0,MIXIRSS_DESCRIPTION_LENGTH,'...');
+ 				$description = ' <description><![CDATA[' . mb_convert_encoding($description,'UTF-8',SOURCE_ENCODING) . ']]></description>';
+ //miko added
+-				$rdf_li .= '    <rdf:li rdf:resource="' . $self . '?' . $r_page . '" />' . "\n";
++				$rdf_li .= '    <rdf:li rdf:resource="' . $url . '" />' . "\n";
+ 				global $newtitle, $newbase;
+ 				if (isset($newbase) && $newbase != '') {
+ 					$anchortitle = $newtitle . ' (' . $title . ')';
+@@ -176,12 +176,12 @@
+ 					$anchortitle = $title;
+ 				}
+ 				$items .= <<<EOD
+-<item rdf:about="$self?$r_page">
++<item rdf:about="$url">
+  <title>$anchortitle</title>
+- <link>$self?$r_page</link>
++ <link>$url</link>
+ $description
+  <dc:date>$date</dc:date>
+- <dc:identifier>$self?$r_page</dc:identifier>
++ <dc:identifier>$url</dc:identifier>
+ $trackback_ping
+ </item>
+ 
+@@ -196,7 +196,7 @@
+ 	header('Content-type: application/xml');
+ 	print '<?xml version="1.0" encoding="UTF-8"?>' . "\n\n";
+ 
+-	$r_whatsnew = rawurlencode($whatsnew);
++	$url_whatsnew = get_page_uri($whatsnew);
+ 	$html = '';
+ 	switch ($version) {
+ 	case '0.91':
+@@ -209,7 +209,7 @@
+ <rss version="$version">
+  <channel>
+   <title><![CDATA[$page_title_utf8]]></title>
+-  <link>$self?$r_whatsnew</link>
++  <link>$url_whatsnew</link>
+   <description><![CDATA[$rss_description_utf8]]></description>
+   <language>ja</language>
+ 
+@@ -229,9 +229,9 @@
+   xmlns="http://purl.org/rss/1.0/"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xml:lang="ja">
+- <channel rdf:about="$self?$r_whatsnew">
++ <channel rdf:about="$url_whatsnew">
+   <title><![CDATA[$page_title_utf8]]></title>
+-  <link>$self?$r_whatsnew</link>
++  <link>$url_whatsnew</link>
+   <description><![CDATA[$rss_description_utf8]]></description>
+   <items>
+    <rdf:Seq>
+diff -ur -x .svn plus.orig/plugin/multilang.inc.php plus.rewritemap/plugin/multilang.inc.php
+--- plus.orig/plugin/multilang.inc.php	2007-06-27 17:53:57.875000000 -0400
++++ plus.rewritemap/plugin/multilang.inc.php	2007-12-22 07:35:49.765625000 -0500
+@@ -42,7 +42,7 @@
+ 	// Location ヘッダーで飛ばないような環境の場合は、この部分を
+ 	// 有効にして対応下さい。
+ 	// if(exist_plugin_action('read')) return plugin_read_action();
+-	header('Location: ' . get_script_uri() . '?' . rawurlencode($page) );
++	header('Location: ' . get_page_uri($page) );
+ 	exit;
+ }
+ 
+diff -ur -x .svn plus.orig/plugin/navi.inc.php plus.rewritemap/plugin/navi.inc.php
+--- plus.orig/plugin/navi.inc.php	2007-06-27 17:53:58.234375000 -0400
++++ plus.rewritemap/plugin/navi.inc.php	2007-12-22 07:35:49.781250000 -0500
+@@ -135,8 +135,8 @@
+ 					$s_page = htmlspecialchars($_page);
+ 					$r_page = rawurlencode($_page);
+ 					$head_tags[] = ' <link rel="' .
+-						$rel . '" href="' . $script .
+-						'?' . $r_page . '" title="' .
++						$rel . '" href="' .
++						get_page_uri($_page) . '" title="' .
+ 						$s_page . '" />';
+ 				}
+ 			}
+diff -ur -x .svn plus.orig/plugin/newpage_subdir.inc.php plus.rewritemap/plugin/newpage_subdir.inc.php
+--- plus.orig/plugin/newpage_subdir.inc.php	2007-06-27 17:53:57.875000000 -0400
++++ plus.rewritemap/plugin/newpage_subdir.inc.php	2007-12-22 07:35:49.781250000 -0500
+@@ -32,7 +32,7 @@
+ 
+ 			$warnings[] = 
+ 				"<font color=\"red\">" . sprintf( _("#%s doesn't have the corresponding page. "),$root) . "</font>" .
+-				"(<a href=\"$script?" . rawurlencode($root) . "\">" . _("making") . "</a>)<br />\n";
++				"(<a href=\"" . get_page_uri($root) . "\">" . _("making") . "</a>)<br />\n";
+ 		}
+ 	}
+ 	$list['directory'] = array_unique($list['directory']);
+@@ -164,7 +164,7 @@
+ 		return $action_messages;
+ 	}
+ 	
+-	header('Location: '.$script.'?'.rawurlencode($vars['directory'].$vars['page']));
++	header('Location: '.get_page_uri($vars['directory'].$vars['page']));
+ 	die();
+ }
+ ?>
+diff -ur -x .svn plus.orig/plugin/paint.inc.php plus.rewritemap/plugin/paint.inc.php
+--- plus.orig/plugin/paint.inc.php	2007-06-27 17:54:00.562500000 -0400
++++ plus.rewritemap/plugin/paint.inc.php	2007-12-22 07:35:49.796875000 -0500
+@@ -100,13 +100,14 @@
+ 	else
+ 	{
+ 		$message = '';
+-		$r_refer = $s_refer = '';
++		$refer = $s_refer = '';
+ 		if (array_key_exists('refer',$vars))
+ 		{
+-			$r_refer = rawurlencode($vars['refer']);
++			$refer = $vars['refer'];
+ 			$s_refer = htmlspecialchars($vars['refer']);
+ 		}
+-		$link = "<p><a href=\"$script?$r_refer\">$s_refer</a></p>";;
++		$url = get_page_uri($refer);
++		$link = "<p><a href=\"$url\">$s_refer</a></p>";;
+ 
+ 		$w = PAINT_APPLET_WIDTH;
+ 		$h = PAINT_APPLET_HEIGHT;
+@@ -158,7 +159,7 @@
+  <param name="param4" value="max_file_size=1000000" />
+  <param name="param5" value="paint_no=$f_no" />
+  <param name="enctype" value="multipart/form-data" />
+- <param name="return.URL" value="$script?$r_refer" />
++ <param name="return.URL" value="$url" />
+  </applet>
+  </div>
+ EOD;
+diff -ur -x .svn plus.orig/plugin/pcomment.inc.php plus.rewritemap/plugin/pcomment.inc.php
+--- plus.orig/plugin/pcomment.inc.php	2007-07-24 20:31:06.093750000 -0400
++++ plus.rewritemap/plugin/pcomment.inc.php	2007-12-22 07:35:49.812500000 -0500
+@@ -79,7 +79,7 @@
+ 	}
+ 
+ 	pkwk_headers_sent();
+-	header('Location: ' . get_script_uri() . '?' . rawurlencode($refer));
++	header('Location: ' . get_page_uri($refer));
+ 	exit;
+ }
+ 
+diff -ur -x .svn plus.orig/plugin/print.inc.php plus.rewritemap/plugin/print.inc.php
+--- plus.orig/plugin/print.inc.php	2007-09-03 10:21:47.468750000 -0400
++++ plus.rewritemap/plugin/print.inc.php	2007-12-22 07:35:49.828125000 -0500
+@@ -281,8 +281,8 @@
+ 	$a_script = str_replace(':', '\:', $a_script);
+ 	$a_script = str_replace(';', '\;', $a_script);
+ 	$a_script = str_replace(',', '\,', $a_script);
+-	$a_page = str_replace('%', '%25', $r_page);
+-	return plugin_qrcode_inline(1,"$script?$a_page");
++	$url = str_replace('%', '%25', get_page_uri($page));
++	return plugin_qrcode_inline(1, $url);
+ }
+ 
+ ?>
+diff -ur -x .svn plus.orig/plugin/recent.inc.php plus.rewritemap/plugin/recent.inc.php
+--- plus.orig/plugin/recent.inc.php	2007-07-24 20:31:06.062500000 -0400
++++ plus.rewritemap/plugin/recent.inc.php	2007-12-22 07:35:49.843750000 -0500
+@@ -79,7 +79,7 @@
+ 		} else {
+ 			$r_page = rawurlencode($page);
+ 			$passage = $show_passage ? ' ' . get_passage($time) : '';
+-			$items .= ' <li><a href="' . $script . '?' . $r_page . '"' . 
++			$items .= ' <li><a href="' . get_page_uri($page) . '"' . 
+ 				' title="' . $s_page . $passage . '">' . $s_page . '</a></li>' . "\n";
+ 		}
+ 	}
+diff -ur -x .svn plus.orig/plugin/related.inc.php plus.rewritemap/plugin/related.inc.php
+--- plus.orig/plugin/related.inc.php	2007-09-03 10:21:47.734375000 -0400
++++ plus.rewritemap/plugin/related.inc.php	2007-12-22 07:35:49.859375000 -0500
+@@ -36,7 +36,7 @@
+ 	$r_word = rawurlencode($_page);
+ 	$s_word = htmlspecialchars($_page);
+ 	$msg = 'Backlinks for: ' . $s_word;
+-	$retval  = '<a href="' . $script . '?' . $r_word . '">' .
++	$retval  = '<a href="' . get_page_uri($_page) . '">' .
+ 		'Return to ' . $s_word .'</a><br />'. "\n";
+ 
+ 	if (empty($data)) {
+@@ -49,7 +49,7 @@
+ 			$r_page  = rawurlencode($page);
+ 			$s_page  = htmlspecialchars($page);
+ 			$passage = get_passage($time);
+-			$retval .= ' <li><a href="' . $script . '?' . $r_page . '">' . $s_page .
++			$retval .= ' <li><a href="' . get_page_uri($page) . '">' . $s_page .
+ 				'</a> ' . $passage . '</li>' . "\n";
+ 		}
+ 		$retval .= '</ul>' . "\n";
+diff -ur -x .svn plus.orig/plugin/rename.inc.php plus.rewritemap/plugin/rename.inc.php
+--- plus.orig/plugin/rename.inc.php	2007-07-24 20:31:06.031250000 -0400
++++ plus.rewritemap/plugin/rename.inc.php	2007-12-22 07:35:49.875000000 -0500
+@@ -437,7 +437,7 @@
+ 	if ($page == '') $page = PLUGIN_RENAME_LOGPAGE;
+ 
+ 	pkwk_headers_sent();
+-	header('Location: ' . get_script_uri() . '?' . rawurlencode($page));
++	header('Location: ' . get_page_uri($page));
+ 	exit;
+ }
+ 
+diff -ur -x .svn plus.orig/plugin/rss.inc.php plus.rewritemap/plugin/rss.inc.php
+--- plus.orig/plugin/rss.inc.php	2007-06-27 17:53:58.921875000 -0400
++++ plus.rewritemap/plugin/rss.inc.php	2007-12-22 07:35:49.875000000 -0500
+@@ -42,6 +42,7 @@
+ 	foreach (file_head($recent, $rss_max) as $line) {
+ 		list($time, $page) = explode("\t", rtrim($line));
+ 		$r_page = rawurlencode($page);
++		$url    = get_page_uri($page);
+ 		$title  = mb_convert_encoding($page, 'UTF-8', SOURCE_ENCODING);
+ 
+ 		switch ($version) {
+@@ -54,7 +55,7 @@
+ 			$items .= <<<EOD
+ <item>
+  <title>$title</title>
+- <link>$self?$r_page</link>
++ <link>$url</link>
+ $date
+ </item>
+ 
+@@ -63,8 +64,7 @@
+ 
+ 		case '1.0':
+ 			// Add <item> into <items>
+-			$rdf_li .= '    <rdf:li rdf:resource="' . $self .
+-				'?' . $r_page . '" />' . "\n";
++			$rdf_li .= '    <rdf:li rdf:resource="' . $url . '" />' . "\n";
+ 
+ 			$date = substr_replace(get_date('Y-m-d\TH:i:sO', $time), ':', -2, 0);
+ 			$trackback_ping = '';
+@@ -73,11 +73,11 @@
+ 				$trackback_ping = ' <trackback:ping rdf:resource="' . "$self?tb_id=$tb_id" . '"/>';
+ 			}
+ 			$items .= <<<EOD
+-<item rdf:about="$self?$r_page">
++<item rdf:about="$url">
+  <title>$title</title>
+- <link>$self?$r_page</link>
++ <link>$url</link>
+  <dc:date>$date</dc:date>
+- <dc:identifier>$self?$r_page</dc:identifier>
++ <dc:identifier>$url</dc:identifier>
+ $trackback_ping
+ </item>
+ 
+@@ -91,7 +91,7 @@
+ 	header('Content-type: application/xml');
+ 	print '<?xml version="1.0" encoding="UTF-8"?>' . "\n\n";
+ 
+-	$r_whatsnew = rawurlencode($whatsnew);
++	$url_whatsnew = get_page_uri($whatsnew);
+ 	switch ($version) {
+ 	case '0.91':
+ 		print '<!DOCTYPE rss PUBLIC "-//Netscape Communications//DTD RSS 0.91//EN"' .
+@@ -103,7 +103,7 @@
+ <rss version="$version">
+  <channel>
+   <title><![CDATA[$page_title_utf8]]></title>
+-  <link>$self?$r_whatsnew</link>
++  <link>$url_whatsnew</link>
+   <description><![CDATA[$rss_description_utf8]]></description>
+   <language>$lang</language>
+ 
+@@ -123,9 +123,9 @@
+   xmlns="http://purl.org/rss/1.0/"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xml:lang="$lang">
+- <channel rdf:about="$self?$r_whatsnew">
++ <channel rdf:about="$url_whatsnew">
+   <title><![CDATA[$page_title_utf8]]></title>
+-  <link>$self?$r_whatsnew</link>
++  <link>$url_whatsnew</link>
+   <description><![CDATA[$rss_description_utf8]]></description>
+   <items>
+    <rdf:Seq>
+diff -ur -x .svn plus.orig/plugin/tb.inc.php plus.rewritemap/plugin/tb.inc.php
+--- plus.orig/plugin/tb.inc.php	2007-12-19 19:55:36.265625000 -0500
++++ plus.rewritemap/plugin/tb.inc.php	2007-12-22 07:35:49.906250000 -0500
+@@ -240,7 +240,7 @@
+ 	}
+ 
+ 	$title = htmlspecialchars($page);
+-	$link  = $script . '?' . rawurlencode($page);
++	$link  = get_page_uri($page);
+ 	$vars['page'] = $page;
+ 	$excerpt = strip_htmltag(convert_html(get_source($page)));
+ 	$excerpt = preg_replace("/&$entity_pattern;/", '', $excerpt);
+diff -ur -x .svn plus.orig/plugin/tooltip.inc.php plus.rewritemap/plugin/tooltip.inc.php
+--- plus.orig/plugin/tooltip.inc.php	2007-06-27 17:54:00.828125000 -0400
++++ plus.rewritemap/plugin/tooltip.inc.php	2007-12-22 07:35:49.921875000 -0500
+@@ -71,10 +71,10 @@
+ 
+ 	$page = strip_bracket($term);
+ 	if ( is_page($page) ) {
+-		$f_page = rawurlencode($page);
++		$url = get_page_uri($page);
+ 		$passage = get_pg_passage($page,FALSE);
+ 		return <<<EOD
+-<a href="$script?$f_page" class="linktip" title="$s_glossary$passage">$term</a>
++<a href="$url" class="linktip" title="$s_glossary$passage">$term</a>
+ EOD;
+ 	}
+ 	else {
+diff -ur -x .svn plus.orig/plugin/topicpath.inc.php plus.rewritemap/plugin/topicpath.inc.php
+--- plus.orig/plugin/topicpath.inc.php	2007-06-27 17:53:58.140625000 -0400
++++ plus.rewritemap/plugin/topicpath.inc.php	2007-12-22 07:35:49.921875000 -0500
+@@ -59,7 +59,7 @@
+ 			$topic_path[] = $element;
+ 		} else {
+ 			// Page exists or not exists
+-			$topic_path[] = '<a href="' . $script . '?' . $landing . '">' .
++			$topic_path[] = '<a href="' . get_page_uri($_landing) . '">' .
+ 				$element . '</a>';
+ 		}
+ 	}
+diff -ur -x .svn plus.orig/plugin/tracker.inc.php plus.rewritemap/plugin/tracker.inc.php
+--- plus.orig/plugin/tracker.inc.php	2007-06-27 17:53:58.796875000 -0400
++++ plus.rewritemap/plugin/tracker.inc.php	2007-12-22 07:35:49.937500000 -0500
+@@ -214,7 +214,7 @@
+ 	$r_page = rawurlencode($page);
+ 
+ 	pkwk_headers_sent();
+-	header('Location: ' . get_script_uri() . '?' . $r_page);
++	header('Location: ' . get_page_uri($page));
+ 	exit;
+ }
+ /*
+diff -ur -x .svn plus.orig/plugin/typekey.inc.php plus.rewritemap/plugin/typekey.inc.php
+--- plus.orig/plugin/typekey.inc.php	2007-09-03 10:21:47.406250000 -0400
++++ plus.rewritemap/plugin/typekey.inc.php	2007-12-22 07:35:49.953125000 -0500
+@@ -113,19 +113,19 @@
+ 	$obj->set_need_email($auth_api['typekey']['need_email']);
+ 	$obj->set_sigKey($vars);
+ 
+-	$r_page = (empty($vars['page'])) ? '' : rawurlencode($vars['page']);
++	$page = (empty($vars['page'])) ? '' : $vars['page'];
+ 
+ 	if (! $obj->auth()) {
+ 		if (isset($vars['logout'])) {
+ 			$obj->auth_session_unset();
+ 		}
+-		header('Location: '.$script.'?'.$r_page);
++		header('Location: '.get_page_uri($page));
+ 		die();
+ 	}
+ 
+ 	// 認証成功
+ 	$obj->typekey_session_put();
+-	header('Location: '.$script.'?'.$r_page);
++	header('Location: '.get_page_uri($page));
+ 	die();
+ }
+ 
+diff -ur -x .svn plus.orig/plugin/xbel.inc.php plus.rewritemap/plugin/xbel.inc.php
+--- plus.orig/plugin/xbel.inc.php	2007-06-27 17:53:58.125000000 -0400
++++ plus.rewritemap/plugin/xbel.inc.php	2007-12-22 07:35:49.968750000 -0500
+@@ -111,11 +111,11 @@
+ 	foreach($page_pref as $_page) {
+ 		$i++;
+ 
+-		$r_page = rawurlencode($_page);
++		$url = get_page_uri($_page);
+ 		$rc .= <<<EOD
+ <tr>
+  <td><input type="checkbox" name="{$i}_c" /></td>
+- <td><input type="hidden" name="{$i}_n" value="$_page" /><a href="$script?$r_page">$_page</a></td>
++ <td><input type="hidden" name="{$i}_n" value="$_page" /><a href="$url">$_page</a></td>
+ </tr>
+ 
+ EOD;
+diff -ur -x .svn plus.orig/plugin/yetlist.inc.php plus.rewritemap/plugin/yetlist.inc.php
+--- plus.orig/plugin/yetlist.inc.php	2007-06-27 17:53:58.593750000 -0400
++++ plus.rewritemap/plugin/yetlist.inc.php	2007-12-22 07:35:49.984375000 -0500
+@@ -48,7 +48,7 @@
+ 			$link_refs = array();
+ 			foreach ($refer as $_refer) {
+ 				$r_refer = rawurlencode($_refer);
+-				$link_refs[] = '<a href="' . $script . '?' . $r_refer . '">' .
++				$link_refs[] = '<a href="' . get_page_uri($_refer) . '">' .
+ 					htmlspecialchars($_refer) . '</a>';
+ 			}
+ 			$link_ref = join(' ', $link_refs);
+diff -ur -x .svn plus.orig/skin/cloudwalk.skin.php plus.rewritemap/skin/cloudwalk.skin.php
+--- plus.orig/skin/cloudwalk.skin.php	2007-07-24 20:31:13.203125000 -0400
++++ plus.rewritemap/skin/cloudwalk.skin.php	2007-12-22 07:35:50.000000000 -0500
+@@ -149,7 +149,7 @@
+ <h2>編集操作</h2>
+ <ul>
+ <?php if ($is_page) { ?>
+-	<li class="pa_reload"><a href="<?php echo "$script?$r_page" ?>">リロード</a></li>
++	<li class="pa_reload"><a href="<?php echo $link_reload ?>">リロード</a></li>
+ 	<li class="pa_newpage"><a href="<?php echo "$script?plugin=newpage&amp;refer=$r_page" ?>">新規</a></li>
+ 	<li class="pa_edit"><a href="<?php echo $link_edit ?>">編集</a></li>
+ <?php   if ($is_read and $function_freeze) { ?>
+diff -ur -x .svn plus.orig/skin/default.js plus.rewritemap/skin/default.js
+--- plus.orig/skin/default.js	2007-07-10 05:16:18.468750000 -0400
++++ plus.rewritemap/skin/default.js	2007-12-22 07:35:50.031250000 -0500
+@@ -42,29 +42,29 @@
+ // Helper image tag set
+ var pukiwiki_adv_tag = '';
+ if (pukiwiki_adv == "on") pukiwiki_adv_tag = '<span style="cursor:hand;">'+
+-'<img src="'+IMAGE_DIR+'plus/ncr.gif" width="22" height="16" border="0" title="'+pukiwiki_msg_to_ncr+'" alt="'+pukiwiki_msg_to_ncr+'" onClick="javascript:pukiwiki_charcode(); return false;" />'+
+-'<img src="'+IMAGE_DIR+'plus/br.gif" width="18" height="16" border="0" title="&amp;br;" alt="&amp;br;" onClick="javascript:pukiwiki_ins(\'&br;\'); return false;" />'+
++'<img src="'+IMAGE_URI+'plus/ncr.gif" width="22" height="16" border="0" title="'+pukiwiki_msg_to_ncr+'" alt="'+pukiwiki_msg_to_ncr+'" onClick="javascript:pukiwiki_charcode(); return false;" />'+
++'<img src="'+IMAGE_URI+'plus/br.gif" width="18" height="16" border="0" title="&amp;br;" alt="&amp;br;" onClick="javascript:pukiwiki_ins(\'&br;\'); return false;" />'+
+ '<'+'/'+'span>&nbsp;';
+ 
+-//'<img src="'+IMAGE_DIR+'plus/iplugin.gif" width="18" height="16" border="0" title="Inline Plugin" alt="Inline Plugin" onClick="javascript:pukiwiki_ins(\'&(){};\'); return false;" />'+
++//'<img src="'+IMAGE_URI+'plus/iplugin.gif" width="18" height="16" border="0" title="Inline Plugin" alt="Inline Plugin" onClick="javascript:pukiwiki_ins(\'&(){};\'); return false;" />'+
+ 
+ var pukiwiki_helper_img = 
+-'<img src="'+IMAGE_DIR+'plus/buttons.gif" width="103" height="16" border="0" usemap="#map_button" tabindex="-1" />&nbsp;'+
++'<img src="'+IMAGE_URI+'plus/buttons.gif" width="103" height="16" border="0" usemap="#map_button" tabindex="-1" />&nbsp;'+
+ pukiwiki_adv_tag +
+-'<img src="'+IMAGE_DIR+'plus/colors.gif" width="64" height="16" border="0" usemap="#map_color" tabindex="-1" />&nbsp;'+
++'<img src="'+IMAGE_URI+'plus/colors.gif" width="64" height="16" border="0" usemap="#map_color" tabindex="-1" />&nbsp;'+
+ '<span style="cursor:hand;">'+
+-'<img src="'+IMAGE_DIR+'face/smile.png" width="15" height="15" border="0" title="(^^)" alt="(^^)" onClick="javascript:pukiwiki_face(\'(^^)\'); return false;" />'+
+-'<img src="'+IMAGE_DIR+'face/bigsmile.png" width="15" height="15" border="0" title="(^-^" alt="(^-^" onClick="javascript:pukiwiki_face(\'(^-^\'); return false;" />'+
+-'<img src="'+IMAGE_DIR+'face/huh.png" width="15" height="15" border="0" title="(^Q^" alt="(^Q^" onClick="javascript:pukiwiki_face(\'(^Q^\'); return false;" />'+
+-'<img src="'+IMAGE_DIR+'face/oh.png" width="15" height="15" border="0" title="(..;" alt="(..;" onClick="javascript:pukiwiki_face(\'(..;\'); return false;" />'+
+-'<img src="'+IMAGE_DIR+'face/wink.png" width="15" height="15" border="0" title="(^_-" alt="(^_-" onClick="javascript:pukiwiki_face(\'(^_-\'); return false;" />'+
+-'<img src="'+IMAGE_DIR+'face/sad.png" width="15" height="15" border="0" title="(--;" alt="(--;" onClick="javascript:pukiwiki_face(\'(--;\'); return false;" />'+
+-'<img src="'+IMAGE_DIR+'face/worried.png" width="15" height="15" border="0" title="(^^;" alt="(^^;" onclick="javascript:pukiwiki_face(\'(^^\;\'); return false;" />'+
+-'<img src="'+IMAGE_DIR+'face/tear.png" width="15" height="15" border="0" title="(T-T" alt="(T-T" onclick="javascript:pukiwiki_face(\'(T-T\'); return false;" />'+
+-'<img src="'+IMAGE_DIR+'face/heart.png" width="15" height="15" border="0" title="&amp;heart;" alt="&amp;heart;" onClick="javascript:pukiwiki_face(\'&amp;heart;\'); return false;" />'+
++'<img src="'+IMAGE_URI+'face/smile.png" width="15" height="15" border="0" title="(^^)" alt="(^^)" onClick="javascript:pukiwiki_face(\'(^^)\'); return false;" />'+
++'<img src="'+IMAGE_URI+'face/bigsmile.png" width="15" height="15" border="0" title="(^-^" alt="(^-^" onClick="javascript:pukiwiki_face(\'(^-^\'); return false;" />'+
++'<img src="'+IMAGE_URI+'face/huh.png" width="15" height="15" border="0" title="(^Q^" alt="(^Q^" onClick="javascript:pukiwiki_face(\'(^Q^\'); return false;" />'+
++'<img src="'+IMAGE_URI+'face/oh.png" width="15" height="15" border="0" title="(..;" alt="(..;" onClick="javascript:pukiwiki_face(\'(..;\'); return false;" />'+
++'<img src="'+IMAGE_URI+'face/wink.png" width="15" height="15" border="0" title="(^_-" alt="(^_-" onClick="javascript:pukiwiki_face(\'(^_-\'); return false;" />'+
++'<img src="'+IMAGE_URI+'face/sad.png" width="15" height="15" border="0" title="(--;" alt="(--;" onClick="javascript:pukiwiki_face(\'(--;\'); return false;" />'+
++'<img src="'+IMAGE_URI+'face/worried.png" width="15" height="15" border="0" title="(^^;" alt="(^^;" onclick="javascript:pukiwiki_face(\'(^^\;\'); return false;" />'+
++'<img src="'+IMAGE_URI+'face/tear.png" width="15" height="15" border="0" title="(T-T" alt="(T-T" onclick="javascript:pukiwiki_face(\'(T-T\'); return false;" />'+
++'<img src="'+IMAGE_URI+'face/heart.png" width="15" height="15" border="0" title="&amp;heart;" alt="&amp;heart;" onClick="javascript:pukiwiki_face(\'&amp;heart;\'); return false;" />'+
+ '<'+'/'+'span>';
+ 
+-//'<img src="'+IMAGE_DIR+'face/star.gif" width="15" height="15" border="0" title="&amp;star;" alt="&amp;star;" onClick="javascript:pukiwiki_face(\'&amp;star;\'); return false;" />'+
++//'<img src="'+IMAGE_URI+'face/star.gif" width="15" height="15" border="0" title="&amp;star;" alt="&amp;star;" onClick="javascript:pukiwiki_face(\'&amp;star;\'); return false;" />'+
+ 
+ // Helper function.
+ function pukiwiki_show_fontset_img()
+@@ -157,15 +157,15 @@
+ // Branch.
+ if (pukiwiki_WinIE)
+ {
+-	document.write ('<scr'+'ipt type="text/javascr'+'ipt" src="'+SKIN_DIR+'winie.js"></scr'+'ipt>');
++	document.write ('<scr'+'ipt type="text/javascr'+'ipt" src="'+SKIN_URI+'winie.js"></scr'+'ipt>');
+ }
+ else if (pukiwiki_Gecko)
+ {
+-	document.write ('<scr'+'ipt type="text/javascr'+'ipt" src="'+SKIN_DIR+'gecko.js"></scr'+'ipt>');
++	document.write ('<scr'+'ipt type="text/javascr'+'ipt" src="'+SKIN_URI+'gecko.js"></scr'+'ipt>');
+ }
+ else
+ {
+-	document.write ('<scr'+'ipt type="text/javascr'+'ipt" src="'+SKIN_DIR+'other.js"></scr'+'ipt>');
++	document.write ('<scr'+'ipt type="text/javascr'+'ipt" src="'+SKIN_URI+'other.js"></scr'+'ipt>');
+ }
+ 
+ var __default_onload_save = window.onload;
+@@ -178,7 +178,7 @@
+ //GreyBox configuration
+ //Use animation?
+ var GB_ANIMATION = true;
+-var GB_IMG_DIR = SKIN_DIR+"greybox/";
++var GB_IMG_DIR = SKIN_URI+"greybox/";
+ //Clicking on the transparent overlay closes the GreyBox window?
+ var GB_overlay_click_close = false;
+ //Demo change headline - look more in demoiframe
+diff -ur -x .svn plus.orig/skin/default.skin.php plus.rewritemap/skin/default.skin.php
+--- plus.orig/skin/default.skin.php	2007-07-24 20:31:13.171875000 -0400
++++ plus.rewritemap/skin/default.skin.php	2007-12-22 07:35:50.046875000 -0500
+@@ -159,8 +159,8 @@
+    $a_script = str_replace(':', '\:', $a_script);
+    $a_script = str_replace(';', '\;', $a_script);
+    $a_script = str_replace(',', '\,', $a_script);
+-   $a_page = str_replace('%', '%25', $r_page);
+-   echo plugin_qrcode_inline(1,"$script?$a_page");
++   $url = str_replace('%', '%25', get_page_uri($_page));
++   echo plugin_qrcode_inline(1, $url);
+   ?>
+   <?php } ?>
+  </td>
+diff -ur -x .svn plus.orig/skin/irid.skin.php plus.rewritemap/skin/irid.skin.php
+--- plus.orig/skin/irid.skin.php	2007-07-24 20:31:13.109375000 -0400
++++ plus.rewritemap/skin/irid.skin.php	2007-12-22 07:35:50.062500000 -0500
+@@ -149,7 +149,7 @@
+ <h2>編集操作</h2>
+ <ul>
+ <?php if ($is_page) { ?>
+-	<li class="pa_reload"><a href="<?php echo "$script?$r_page" ?>">リロード</a></li>
++	<li class="pa_reload"><a href="<?php echo $link_reload ?>">リロード</a></li>
+ 	<li class="pa_newpage"><a href="<?php echo "$script?plugin=newpage&amp;refer=$r_page" ?>">新規</a></li>
+ 	<li class="pa_edit"><a href="<?php echo $link_edit ?>">編集</a></li>
+ <?php   if ($is_read and $function_freeze) { ?>
+diff -ur -x .svn plus.orig/skin/iridorange.skin.php plus.rewritemap/skin/iridorange.skin.php
+--- plus.orig/skin/iridorange.skin.php	2007-07-24 20:31:13.156250000 -0400
++++ plus.rewritemap/skin/iridorange.skin.php	2007-12-22 07:35:50.093750000 -0500
+@@ -149,7 +149,7 @@
+ <h2>編集操作</h2>
+ <ul>
+ <?php if ($is_page) { ?>
+-	<li class="pa_reload"><a href="<?php echo "$script?$r_page" ?>">リロード</a></li>
++	<li class="pa_reload"><a href="<?php echo $link_reload ?>">リロード</a></li>
+ 	<li class="pa_newpage"><a href="<?php echo "$script?plugin=newpage&amp;refer=$r_page" ?>">新規</a></li>
+ 	<li class="pa_edit"><a href="<?php echo $link_edit ?>">編集</a></li>
+ <?php   if ($is_read and $function_freeze) { ?>
+diff -ur -x .svn plus.orig/skin/keitai.skin.php plus.rewritemap/skin/keitai.skin.php
+--- plus.orig/skin/keitai.skin.php	2007-06-27 17:54:30.000000000 -0400
++++ plus.rewritemap/skin/keitai.skin.php	2007-12-22 07:35:50.109375000 -0500
+@@ -107,7 +107,7 @@
+ 	}
+ }
+ $footnavi[] = '<a href="' . $link['top']  . '" ' . $accesskey . '="0">0.Top</a>';
+-$headnavi[] = '<a href="' . $script . '?' . rawurlencode($menubar) . '" ' . $accesskey . '="4">4.Menu</a>';
++$headnavi[] = '<a href="' . $link['menu'] . '" ' . $accesskey . '="4">4.Menu</a>';
+ $headnavi[] = '<a href="' . $link['recent'] . '" ' . $accesskey . '="5">5.Recent</a>';
+ 
+ // Previous / Next block
+@@ -115,13 +115,13 @@
+ 	$prev = $pageno - 1;
+ 	$next = $pageno + 1;
+ 	if ($pageno > 0) {
+-		$headnavi[] = '<a href="' . $script . '?cmd=read&amp;page=' . $r_page .
+-			'&amp;p=' . $prev . '" ' . $accesskey . '="7">7.Prev</a>';
++		$headnavi[] = '<a href="' . get_page_uri($_page, 'p=' . $prev) .
++			'" ' . $accesskey . '="7">7.Prev</a>';
+ 	}
+ 	$navi[] = $next . '/' . $pagecount . ' ';
+ 	if ($pageno < $pagecount - 1) {
+-		$headnavi[] = '<a href="' . $script . '?cmd=read&amp;page=' . $r_page .
+-			'&amp;p=' . $next . '" ' . $accesskey . '="8">8.Next</a>';
++		$headnavi[] = '<a href="' . get_page_uri($_page, 'p=' . $next) .
++			'" ' . $accesskey . '="8">8.Next</a>';
+ 	}
+ }
+ $headnavi[] = '<a href="' . $_LINK['reload'] . '"' . $accesskey . '="9">9.Reload</a>';
+diff -ur -x .svn plus.orig/skin/lang/en_US.js plus.rewritemap/skin/lang/en_US.js
+--- plus.orig/skin/lang/en_US.js	2007-06-27 17:54:29.109375000 -0400
++++ plus.rewritemap/skin/lang/en_US.js	2007-12-22 07:35:50.125000000 -0500
+@@ -9,11 +9,11 @@
+ var pukiwiki_msg_select = "Please select the range of the object.";
+ var pukiwiki_msg_fontsize = "Size of character ( It specifies it with % or pt[omit]. ): ";
+ var pukiwiki_msg_to_ncr = "It converts it into the numeric character reference.";
+-var pukiwiki_msg_hint = '<img src="'+IMAGE_DIR+'plus/hint.png" width="18" height="16" border="0" title="hint" alt="hint" />';
++var pukiwiki_msg_hint = '<img src="'+IMAGE_URI+'plus/hint.png" width="18" height="16" border="0" title="hint" alt="hint" />';
+ var pukiwiki_msg_winie_hint_text = "\n\nThe color selected first becomes the color specification and the character color and the color selected next become the background colors.\n\nAfter processing the range of the selection, the range remains selecting it.\nPlease input it after moving the cursor with [ → ] key when you continuously input the character.\n\n\n-- +α(Advance mode) --\n\n[ &# ] button converts the selection character string into the numeric character reference.";
+ var pukiwiki_msg_gecko_hint_text = pukiwiki_msg_winie_hint_text + "\n\n" + "Please push the [ ESC ] key when the range of the display returns to the head, and the processed range disappears.";
+-var pukiwiki_msg_to_easy_t = '<img src="'+IMAGE_DIR+'plus/easy.png" width="18" height="16" border="0" title="easy" alt="easy" />';
+-var pukiwiki_msg_to_adv_t = '<img src="'+IMAGE_DIR+'plus/adv.png" width="18" height="16" border="0" title="adv" alt="adv" />';
++var pukiwiki_msg_to_easy_t = '<img src="'+IMAGE_URI+'plus/easy.png" width="18" height="16" border="0" title="easy" alt="easy" />';
++var pukiwiki_msg_to_adv_t = '<img src="'+IMAGE_URI+'plus/adv.png" width="18" height="16" border="0" title="adv" alt="adv" />';
+ var pukiwiki_msg_to_easy = "It changed to an easy mode.\nAfter reload, it becomes effective.\n\nIs it right now reload?";
+ var pukiwiki_msg_to_adv = "It changed to the advance mode.\nAfter reload, it becomes effective.\n\nIs it right now reload?";
+ var pukiwiki_msg_inline1 = "Please input the plugin name. [ & is omitted ]";
+diff -ur -x .svn plus.orig/skin/lang/ja_JP.js plus.rewritemap/skin/lang/ja_JP.js
+--- plus.orig/skin/lang/ja_JP.js	2007-06-27 17:54:29.125000000 -0400
++++ plus.rewritemap/skin/lang/ja_JP.js	2007-12-22 07:35:50.140625000 -0500
+@@ -9,11 +9,11 @@
+ var pukiwiki_msg_select = "対象範囲を選択してください。";
+ var pukiwiki_msg_fontsize = "文字の大きさ ( % または pt[省略可] で指定): ";
+ var pukiwiki_msg_to_ncr = "数値文字参照へ変換";
+-var pukiwiki_msg_hint = '<img src="'+IMAGE_DIR+'plus/hint.png" width="18" height="16" border="0" title="hint" alt="hint" />';
++var pukiwiki_msg_hint = '<img src="'+IMAGE_URI+'plus/hint.png" width="18" height="16" border="0" title="hint" alt="hint" />';
+ var pukiwiki_msg_winie_hint_text = "\n\n色指定は、最初に選択した色が文字色、次に選択した色が背景色になります。\n\n選択範囲を処理後は、その範囲が選択したままになっています。\n続けて文字を入力する場合は、[ → ]キーでカーソルを移動してから入力してください。\n\n\n-- +α(アドバンスモード) --\n\n[ &# ] ボタンは、選択文字列を数値文字参照に変換します。";
+ var pukiwiki_msg_gecko_hint_text = pukiwiki_msg_winie_hint_text + "\n\n" + "表示範囲が先頭に戻ってしまい、処理した範囲が見えなくなった時は、[ ESC ]キーを押してみてください。";
+-var pukiwiki_msg_to_easy_t = '<img src="'+IMAGE_DIR+'plus/easy.png" width="18" height="16" border="0" title="easy" alt="easy" />';
+-var pukiwiki_msg_to_adv_t = '<img src="'+IMAGE_DIR+'plus/adv.png" width="18" height="16" border="0" title="adv" alt="adv" />';
++var pukiwiki_msg_to_easy_t = '<img src="'+IMAGE_URI+'plus/easy.png" width="18" height="16" border="0" title="easy" alt="easy" />';
++var pukiwiki_msg_to_adv_t = '<img src="'+IMAGE_URI+'plus/adv.png" width="18" height="16" border="0" title="adv" alt="adv" />';
+ var pukiwiki_msg_to_easy = "イージーモードに変更しました。\nリロード後に有効になります。\n\n今すぐリロードしますか？";
+ var pukiwiki_msg_to_adv = "アドバンスモードに変更しました。\nリロード後に有効になります。\n\n今すぐリロードしますか？";
+ var pukiwiki_msg_inline1 = "プラグイン名を入力してください。[ ＆ は省く ]";
+diff -ur -x .svn plus.orig/skin/lang/ko_KR.js plus.rewritemap/skin/lang/ko_KR.js
+--- plus.orig/skin/lang/ko_KR.js	2007-06-27 17:54:29.109375000 -0400
++++ plus.rewritemap/skin/lang/ko_KR.js	2007-12-22 07:35:50.156250000 -0500
+@@ -9,11 +9,11 @@
+ var pukiwiki_msg_select = "대상 범위를 선택해 주세요.";
+ var pukiwiki_msg_fontsize = "문자의 크기 (% 또는 pt[생략가능] 으로 지정): ";
+ var pukiwiki_msg_to_ncr = "수치 문자 참조에 변환";
+-var pukiwiki_msg_hint = '<img src="'+IMAGE_DIR+'plus/hint.png" width="18" height="16" border="0" title="hint" alt="hint" />';
++var pukiwiki_msg_hint = '<img src="'+IMAGE_URI+'plus/hint.png" width="18" height="16" border="0" title="hint" alt="hint" />';
+ var pukiwiki_msg_winie_hint_text = "\n\n색지정은, 최초로 선택한 색이 문자색, 다음에 선택한 색이 배경색이 됩니다.\n\n선택 범위를 처리 후는, 그 범위가 선택한 채로 있습니다.\n계속해 문자를 입력하는 경우는,[ → ]키로 커서를 이동하고 나서 입력해 주세요.\n\n\n-- +α(어드밴스 모드) --\n\n[ &# ] 버튼은, 선택 문자열을 수치 문자 참조로 변환합니다.";
+ var pukiwiki_msg_gecko_hint_text = pukiwiki_msg_winie_hint_text + "\n\n" + "표시 범위가 선두로 돌아와 버려, 처리한 범위가 안보이게 되었을 때는,[ ESC ]키를 눌러 보세요.";
+-var pukiwiki_msg_to_easy_t = '<img src="'+IMAGE_DIR+'plus/easy.png" width="18" height="16" border="0" title="easy" alt="easy" />';
+-var pukiwiki_msg_to_adv_t = '<img src="'+IMAGE_DIR+'plus/adv.png" width="18" height="16" border="0" title="adv" alt="adv" />';
++var pukiwiki_msg_to_easy_t = '<img src="'+IMAGE_URI+'plus/easy.png" width="18" height="16" border="0" title="easy" alt="easy" />';
++var pukiwiki_msg_to_adv_t = '<img src="'+IMAGE_URI+'plus/adv.png" width="18" height="16" border="0" title="adv" alt="adv" />';
+ var pukiwiki_msg_to_easy = "이지 모드로 변경했습니다.\n리로드 후에 유효하게 됩니다.\n\n금방 리로드 합니까?";
+ var pukiwiki_msg_to_adv = "어드밴스 모드로 변경했습니다.\n리로드 후에 유효하게 됩니다.\n\n금방 리로드 합니까?";
+ var pukiwiki_msg_inline1 = "플러그 인명을 입력해 주세요.[ ＆ 는 생략한다 ]";
+diff -ur -x .svn plus.orig/skin/lang/zh_CN.js plus.rewritemap/skin/lang/zh_CN.js
+--- plus.orig/skin/lang/zh_CN.js	2007-06-27 17:54:29.125000000 -0400
++++ plus.rewritemap/skin/lang/zh_CN.js	2007-12-22 07:35:50.171875000 -0500
+@@ -9,11 +9,11 @@
+ var pukiwiki_msg_select = "请选择对象范围。";
+ var pukiwiki_msg_fontsize = "文字的大小 ( % 又 pt[省略可]指定): ";
+ var pukiwiki_msg_to_ncr = "变换向数值文字参照";
+-var pukiwiki_msg_hint = '<img src="'+IMAGE_DIR+'plus/hint.png" width="18" height="16" border="0" title="hint" alt="hint" />';
++var pukiwiki_msg_hint = '<img src="'+IMAGE_URI+'plus/hint.png" width="18" height="16" border="0" title="hint" alt="hint" />';
+ var pukiwiki_msg_winie_hint_text = "\n\n颜色指定，在最初时变成为选择了的颜色文字颜色，其次选择了的颜色背景颜色。\n\n处理后，那个范围选择了的着变成选择范围。\n如果继续输入文字用、[→]钥匙移动光标之后请输入。\n\n\n-- +α(扩张方式) --\n\n[ &# ] 按钮，数值文字参照转换选择字符串。";
+ var pukiwiki_msg_gecko_hint_text = pukiwiki_msg_winie_hint_text + "\n\n" + "表示范围前头回来了，处理了的范围看不见了的时候，请[试着按ESC ]钥匙。";
+-var pukiwiki_msg_to_easy_t = '<img src="'+IMAGE_DIR+'plus/easy.png" width="18" height="16" border="0" title="easy" alt="easy" />';
+-var pukiwiki_msg_to_adv_t = '<img src="'+IMAGE_DIR+'plus/adv.png" width="18" height="16" border="0" title="adv" alt="adv" />';
++var pukiwiki_msg_to_easy_t = '<img src="'+IMAGE_URI+'plus/easy.png" width="18" height="16" border="0" title="easy" alt="easy" />';
++var pukiwiki_msg_to_adv_t = '<img src="'+IMAGE_URI+'plus/adv.png" width="18" height="16" border="0" title="adv" alt="adv" />';
+ var pukiwiki_msg_to_easy = "变更了为简单方式。\n对再读包含在内后变得有效。\n\n现在马上再读包含在内做吗？";
+ var pukiwiki_msg_to_adv = "变更了为扩张方式。\n对再读包含在内后变得有效。\n\n现在马上再读包含在内做吗？";
+ var pukiwiki_msg_inline1 = "请输入插件名。[ ＆ 省却 ]";
+diff -ur -x .svn plus.orig/skin/lang/zh_TW.js plus.rewritemap/skin/lang/zh_TW.js
+--- plus.orig/skin/lang/zh_TW.js	2007-06-27 17:54:29.109375000 -0400
++++ plus.rewritemap/skin/lang/zh_TW.js	2007-12-22 07:35:50.187500000 -0500
+@@ -9,11 +9,11 @@
+ var pukiwiki_msg_select = "請選擇對象範圍。";
+ var pukiwiki_msg_fontsize = "文字的大小 ( % 又 pt[省略可]指定): ";
+ var pukiwiki_msg_to_ncr = "變換向數值文字參照";
+-var pukiwiki_msg_hint = '<img src="'+IMAGE_DIR+'plus/hint.png" width="18" height="16" border="0" title="hint" alt="hint" />';
++var pukiwiki_msg_hint = '<img src="'+IMAGE_URI+'plus/hint.png" width="18" height="16" border="0" title="hint" alt="hint" />';
+ var pukiwiki_msg_winie_hint_text = "\n\n顏色指定，在最初時變成為選擇了的顏色文字顏色，其次選擇了的顏色背景顏色。\n\n處理後，那個範圍選擇了的著變成選擇範圍。\n如果繼續輸入文字用、[→]鑰匙移動光標之後請輸入。\n\n\n-- +α(擴張方式) --\n\n[ &# ] 按鈕，數值文字參照轉換選擇字符串。";
+ var pukiwiki_msg_gecko_hint_text = pukiwiki_msg_winie_hint_text + "\n\n" + "表示範圍前頭回來了，處理了的範圍看不見了的時候，請[試著按ESC ]鑰匙。";
+-var pukiwiki_msg_to_easy_t = '<img src="'+IMAGE_DIR+'plus/easy.png" width="18" height="16" border="0" title="easy" alt="easy" />';
+-var pukiwiki_msg_to_adv_t = '<img src="'+IMAGE_DIR+'plus/adv.png" width="18" height="16" border="0" title="adv" alt="adv" />';
++var pukiwiki_msg_to_easy_t = '<img src="'+IMAGE_URI+'plus/easy.png" width="18" height="16" border="0" title="easy" alt="easy" />';
++var pukiwiki_msg_to_adv_t = '<img src="'+IMAGE_URI+'plus/adv.png" width="18" height="16" border="0" title="adv" alt="adv" />';
+ var pukiwiki_msg_to_easy = "變更了為簡單方式。\n對再讀包含在內後變得有效。\n\n現在馬上再讀包含在內做嗎？";
+ var pukiwiki_msg_to_adv = "變更了為擴張方式。\n對再讀包含在內後變得有效。\n\n現在馬上再讀包含在內做嗎？";
+ var pukiwiki_msg_inline1 = "請輸入插件名。[ ＆ 省卻 ]";
+diff -ur -x .svn plus.orig/skin/sortabletable.js plus.rewritemap/skin/sortabletable.js
+--- plus.orig/skin/sortabletable.js	2007-06-27 17:54:29.984375000 -0400
++++ plus.rewritemap/skin/sortabletable.js	2007-12-22 07:35:50.203125000 -0500
+@@ -147,7 +147,7 @@
+ 			if (c.firstChild.nodeName == 'A') { c.firstChild.href='javascript:void(0)'; }
+ 			img = doc.createElement("IMG");
+ 			// img.src = "image/blank.png";
+-			img.src = IMAGE_DIR+"blank.png";
++			img.src = IMAGE_URI+"blank.png";
+ 			c.appendChild(img);
+ 			if (this.sortTypes[i] != null)
+ 				c._sortType = this.sortTypes[i];

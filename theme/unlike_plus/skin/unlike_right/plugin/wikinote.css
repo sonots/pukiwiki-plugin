@@ -1,0 +1,66 @@
+/* wikinote.inc.php
+------------------------------------------------------------------------------*/
+ul.wikinote {
+	float:right;
+	list-style-type:none;
+	list-style-position:outside;
+	padding:0;
+	margin:0;
+	white-space:nowrap;
+}
+ul.wikinote li {
+	float:left;
+	height:2.0em;
+	line-height:1.9em;
+	border:1px solid #353573;
+
+	margin:0px 0px 0px 7px;
+	text-align:center;
+}
+ul.wikinote li a,
+ul.wikinote li span.noexists {
+	display:block;
+	padding-left:7px;
+	padding-right:7px;
+	
+	background-color:#eee;
+	font-family:  Arial,"‚l‚r ‚oƒSƒVƒbƒN",sans-serif;
+	color:#000;
+	text-decoration:none;
+}
+ul.wikinote li span.noexists a {
+	padding: 0;
+	display:inline;
+	text-decoration:underline;
+}
+ul.wikinote li.selected a,
+ul.wikinote li.selected span.noexists,
+ul.wikinote li a:hover {
+	overflow:visible;
+	position:relative;
+	z-index:2;
+	border-bottom: 0px solid;
+
+	background-color:#fff;
+}
+div#wrap_body {
+	position:relative;
+	z-index:1;
+	top:-.3em;
+	background:#fff;
+	border-top:1px solid #353573;
+	
+	margin-right:-15px;
+	margin-bottom:0px;
+	margin-left:-20px;
+	padding:.5em 15px 0px 20px;
+	border-right:1px solid #353573;
+}
+@media print {
+	ul.wikinote {
+		display:none;
+	}
+	div#wrap_body {
+		border:none;
+	}
+}

@@ -1,0 +1,45 @@
+--- html.php.orig	2007-02-06 13:42:53.875000000 -0500
++++ html.php	2007-02-06 13:39:56.296875000 -0500
+@@ -29,14 +29,6 @@
+ 	global $skin_file, $menubar, $sidebar;
+ 	global $_string;
+ 
+-	if (! defined('SKIN_FILE') || ! file_exists(SKIN_FILE) || ! is_readable(SKIN_FILE)) {
+-		if (! file_exists($skin_file) || ! is_readable($skin_file)) {
+-			die_message(SKIN_FILE . '(skin file) is not found.');
+-		} else {
+-			define('SKIN_FILE', $skin_file);
+-		}
+-	}
+-
+ 	$_LINK = $_IMAGE = array();
+ 
+ 	// Add JavaScript header when ...
+@@ -189,7 +181,26 @@
+ 	$longtaketime = getmicrotime() - MUTIME;
+ 	$taketime     = sprintf('%01.03f', $longtaketime);
+ 
+-	require(SKIN_FILE);
++	if (($skin = get_cookie_skin()) !== '') {
++		$skin_file = $skin;
++	}
++	if (! file_exists($skin_file) || ! is_readable($skin_file)) {
++		die_message($skin_file . '(skin file) is not found.');
++	}
++	require($skin_file);
++}
++
++function get_cookie_skin()
++{
++	if (isset($HTTP_COOKIE_VARS['skin'])) {
++		$cookie['skin'] = $HTTP_COOKIE_VARS['skin'];
++	} elseif (isset($_COOKIE['skin']) ) {
++		$cookie['skin'] = $_COOKIE['skin'];
++	} else {
++		return '';
++	}
++	if ($cookie['skin'] == 'none') return'';
++	return SKIN_DIR . $cookie['skin'];
+ }
+ 
+ // Show 'edit' form

@@ -1,0 +1,15 @@
+@charset "utf-8";
+
+/*  Stylesheet for geckodev.org
+
+Creator: leva(http://www.geckodev.org/)
+License: X11 License */
+
+/* recent.inc.php */
+ul.recent_list{
+	list-style-type: decimal;}
+
+/* pupular.inc.php */
+ul.popular_list{
+	list-style-type: decimal;}
+
