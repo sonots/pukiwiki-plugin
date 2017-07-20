@@ -3,7 +3,7 @@
 # INTRODUCTION
 
 This is a repository for PukiWiki plugins.
-See http://pkwk.sonots.com/.
+See http://pukiwiki.sonots.com/.
 
 # LICENSE
 
